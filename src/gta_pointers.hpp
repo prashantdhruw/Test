@@ -420,7 +420,7 @@ namespace big
 
 		PVOID m_network_can_access_multiplayer;
 
-		PVOID m_send_clone_create;
+		uint32_t* m_minority_report;
 	};
 #pragma pack(pop)
 	static_assert(sizeof(gta_pointers) % 8 == 0, "Pointers are not properly aligned");
