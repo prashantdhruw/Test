@@ -22,13 +22,6 @@ Chronix is an up-to-date menu focusing on protecting the user from toxic modders
 
 Read the [SETUP](https://github.com/YimMenu/YimMenu/wiki/Setup-your-PC-for-YimMenu-Development) guide.
 
-## Make your own flavour of YimMenu
-
-Fork YimMenu and git clone that repository instead of https://github.com/YimMenu/YimMenu.git
-
-Click the below link to make your own fork of YimMenu:
-https://github.com/YimMenu/YimMenu/fork
-  
 ## Staying Up To Date
 
 Pull the latest changes from this repository.
