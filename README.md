@@ -49,6 +49,6 @@ If you are doing custom modifications to the codebase and have a fork you are on
 
 ## Contributing
 
-You're free to contribute to YimMenu as long as the features are useful, not overly toxic and do not contain ANYTHING related to GTA5 Source Code Leaks, or anything that may get YimMenu targeted by Take2 or its affliliates.
+You're free to contribute to Chronix as long as the features are useful, not overly toxic and do not contain ANYTHING related to GTA5 Source Code Leaks, or anything that may get YimMenu targeted by Take2 or its affliliates.
 
 Make sure to read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
