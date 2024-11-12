@@ -1,12 +1,15 @@
 #include "hooking/hooking.hpp"
 #include "pointers.hpp"
+#include "views/view.hpp"
 
 namespace big
 {
 	const char* respawn_label_callback(const char* label)
 	{
 		if (g.self.god_mode)
-			return "~r~Dying with god mode, how?";
+		{
+			return custom_respawn_text;
+		}
 
 		return nullptr;
 	}

@@ -10,11 +10,16 @@ namespace big
 		if (ImGui::Begin("menu_heading", nullptr, window_flags | ImGuiWindowFlags_NoScrollbar))
 		{
 			ImGui::BeginGroup();
-			ImGui::Text("HEADING_WELCOME"_T.data());
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.172f, 0.380f, 0.909f, 1.f));
-			ImGui::Text(g_local_player == nullptr || g_local_player->m_player_info == nullptr ?
-			        "UNKNOWN_USERNAME"_T.data() :
-			        g_local_player->m_player_info->m_net_player_data.m_name);
+			ImGui::Text("~Chronix~");
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.259f, 0.910f, 0.173f, 1.f));
+			if (g_local_player == nullptr || g_local_player->m_player_info == nullptr)
+			{
+				ImGui::Text("Welcome!");
+			}
+			else
+			{
+				ImGui::Text("Welcome, %s!", g_local_player->m_player_info->m_net_player_data.m_name);
+			}
 			ImGui::PopStyleColor();
 			ImGui::EndGroup();
 #ifdef YIM_DEV

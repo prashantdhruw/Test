@@ -9,7 +9,7 @@ constexpr auto listbox_height = 0.2f;
 
 namespace big
 {
-
+	extern char custom_respawn_text[128];
 	inline ImVec2 get_listbox_dimensions()
 	{
 		return {750 * listbox_width, 1000 * listbox_height};

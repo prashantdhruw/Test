@@ -3,6 +3,7 @@
 
 namespace big
 {
+	char custom_respawn_text[128] = "WASTED";
 	void view::gui_settings()
 	{
 		components::sub_title("SETTINGS_UI_SCALE"_T);
@@ -38,6 +39,10 @@ namespace big
 		{
 			g.window.frame_color = ImGui::ColorConvertFloat4ToU32(col_frame);
 		}
+
+		components::sub_title("Wasted Screen"_T.data());
+		ImGui::SetNextItemWidth(400);
+		ImGui::InputText("##WASTED", custom_respawn_text, IM_ARRAYSIZE(custom_respawn_text), ImGuiInputTextFlags_EnterReturnsTrue);
 
 		components::sub_title("VIEW_GUI_SETTINGS_INGAME_OVERLAY"_T);
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_OVERLAY"_T.data(), &g.window.ingame_overlay.opened);

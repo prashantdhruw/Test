@@ -15,7 +15,12 @@ namespace big
 		bool result = ImGui::Button(text.data(), {((float)*g_pointers->m_gta.m_resolution_x * 0.15f) - 30, 0});
 		ImGui::PopStyleVar(4);
 		ImGui::PopStyleColor(3);
-
+		if (text == "Unload" && ImGui::IsItemHovered())
+		{
+			ImGui::BeginItemTooltip();
+			ImGui::Text("Unload Chronix from GTA5 (May cause Instability/Crashing)");
+			ImGui::EndTooltip();
+		}
 		return result;
 	}
 }
