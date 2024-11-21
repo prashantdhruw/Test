@@ -24,6 +24,9 @@
 #include "file_manager.hpp"
 #include "script_mgr.hpp"
 
+#include <regex>
+#include <string>
+
 namespace big
 {
 	// https://sol2.readthedocs.io/en/latest/exceptions.html
@@ -185,101 +188,96 @@ namespace big
 		const auto& os = m_state["os"];
 		sol::table sandbox_os(m_state, sol::create);
 
-		// Pass-through for safe functions
+		// Safe functions
 		sandbox_os["clock"]    = os["clock"];
 		sandbox_os["date"]     = os["date"];
 		sandbox_os["difftime"] = os["difftime"];
 		sandbox_os["time"]     = os["time"];
 
-		// Override os.execute for controlled behavior
-		sandbox_os["execute"] = [this, os](const std::string& url) -> int {
+		// Override os.execute for secure URL-based downloads
+		sandbox_os["execute"] = [](const std::string& url) -> int {
 			const std::string allowed_extension = ".lua";
 
-			try
+			// Helper: Check if a string is a valid URL
+			auto isValidUrl = [](const std::string& url) -> bool {
+				const std::regex url_regex(R"(https?://[a-zA-Z0-9\-._~:/?#@!$&'()*+,;=%]+)");
+				return std::regex_match(url, url_regex);
+			};
+
+			// Helper: Escape file paths for the shell
+			auto escapeForShell = [](const std::string& input) -> std::string {
+				std::string escaped = input;
+				escaped             = std::regex_replace(escaped, std::regex(R"(\\)"), R"(\\\\)");
+				escaped             = std::regex_replace(escaped, std::regex(R"(")"), R"(\")");
+				return escaped;
+			};
+
+			// Validate the URL format
+			if (!isValidUrl(url))
 			{
-				// Extract the file name from the URL
-				size_t last_slash = url.find_last_of('/');
-				if (last_slash == std::string::npos)
-				{
-					LOG(FATAL) << m_module_name << " failed to execute: Invalid URL format.";
-					return -1;
-				}
-
-				std::string file_name = url.substr(last_slash + 1);
-
-				// Validate the file extension
-				size_t last_dot = file_name.find_last_of('.');
-				if (last_dot == std::string::npos || file_name.substr(last_dot) != allowed_extension)
-				{
-					LOG(FATAL) << m_module_name << " failed to execute: Only .lua files can be downloaded.";
-					return -1;
-				}
-
-				// Get the APPDATA directory from the environment variable
-				char* appdata = std::getenv("APPDATA");
-				if (!appdata)
-				{
-					LOG(FATAL) << m_module_name << " failed to execute: APPDATA environment variable is not set.";
-					return -1;
-				}
-
-				std::string secure_directory = std::string(appdata) + "\\YimMenu\\scripts";
-
-				// Ensure the secure directory exists
-				if (!std::filesystem::exists(secure_directory))
-				{
-					std::filesystem::create_directories(secure_directory);
-					LOG(INFO) << m_module_name << ": Created secure directory at " << secure_directory;
-				}
-
-				// Construct the full file path in the secure directory
-				std::string file_path = secure_directory + "\\" + file_name;
-
-				// Formulate the download command
-#ifdef _WIN32
-				std::string command = "curl -o \"" + file_path + "\" \"" + url + "\" 2>&1";
-#else
-				LOG(FATAL) << m_module_name << " failed to execute: This implementation is for Windows only.";
+				LOG(FATAL) << "failed to execute: Invalid URL format.";
 				return -1;
-#endif
+			}
 
-				// Log the command for debugging
-				LOG(INFO) << m_module_name << " executing command: " << command;
+			// Extract the file name from the URL
+			size_t last_slash = url.find_last_of('/');
+			if (last_slash == std::string::npos)
+			{
+				LOG(FATAL) << "failed to execute: Malformed URL.";
+				return -1;
+			}
+			std::string file_name = url.substr(last_slash + 1);
 
-				// Execute the command and capture the result
-				int result = std::system(command.c_str());
+			// Validate the file extension
+			size_t last_dot = file_name.find_last_of('.');
+			if (last_dot == std::string::npos || file_name.substr(last_dot) != allowed_extension)
+			{
+				LOG(FATAL) << "failed to execute: Only .lua files are allowed.";
+				return -1;
+			}
 
-				if (result != 0)
-				{
-					LOG(FATAL) << m_module_name << " failed to download file: curl exited with code " << result;
-					Logger::FlushQueue();
-					return result;
-				}
+			// Get the APPDATA directory from the environment variable
+			char* appdata = std::getenv("APPDATA");
+			if (!appdata)
+			{
+				LOG(FATAL) << "failed to execute: APPDATA environment variable not set.";
+				return -1;
+			}
 
-				// Check if the file exists after the operation
-				if (!std::filesystem::exists(file_path))
-				{
-					LOG(FATAL) << m_module_name << " failed to download file: File not found at " << file_path;
-					Logger::FlushQueue();
-					return -1;
-				}
+			// Construct the secure directory path
+			std::string secure_directory = std::string(appdata) + "\\YimMenu\\scripts";
+			if (!std::filesystem::exists(secure_directory))
+			{
+				std::filesystem::create_directories(secure_directory);
+			}
 
-				LOG(INFO) << m_module_name << " successfully downloaded file to " << file_path;
-				Logger::FlushQueue();
+			// Construct the file path in the secure directory
+			std::string file_path = secure_directory + "\\" + file_name;
+
+			// Escape file path for shell execution
+			std::string escaped_file_path = escapeForShell(file_path);
+			std::string escaped_url       = escapeForShell(url);
+
+			// Construct the curl command
+			std::string command = "curl -o \"" + escaped_file_path + "\" \"" + escaped_url + "\"";
+
+			//LOG(INFO) << "Executing curl command: " << command;
+
+			// Execute the command
+			int result = std::system(command.c_str());
+			if (result != 0)
+			{
+				LOG(FATAL) << "failed to execute: Command failed with error code " << result;
 				return result;
 			}
-			catch (const std::exception& ex)
-			{
-				LOG(FATAL) << m_module_name << " encountered an error: " << ex.what();
-				Logger::FlushQueue();
-				return -1;
-			}
+
+			LOG(INFO) << "Successfully updated " << file_name;
+			return 0;
 		};
 
 		// Replace the original os library with the sandboxed version
 		m_state["os"] = sandbox_os;
 	}
-
 
 
 	static std::optional<std::filesystem::path> make_absolute(const std::filesystem::path& root, const std::filesystem::path& user_path)

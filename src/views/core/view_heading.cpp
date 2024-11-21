@@ -22,7 +22,7 @@ namespace big
 			}
 			ImGui::PopStyleColor();
 			ImGui::EndGroup();
-#ifdef YIM_DEV
+
 			ImGui::SameLine();
 			ImGui::SetCursorPos(
 			    {(300.f * g.window.gui_scale) - ImGui::CalcTextSize("UNLOAD"_T.data()).x - ImGui::GetStyle().ItemSpacing.x,
@@ -34,7 +34,6 @@ namespace big
 				g_running = false;
 			}
 			ImGui::PopStyleColor();
-#endif
 		}
 		ImGui::End();
 	}

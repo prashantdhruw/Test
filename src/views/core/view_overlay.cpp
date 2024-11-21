@@ -72,10 +72,10 @@ namespace big
 				ImGui::SameLine();
 				if (g.window.ingame_overlay_indicators.show_infinite_ammo)
 					components::overlay_indicator("VIEW_OVERLAY_INFINITE_AMMO"_T, g.weapons.infinite_ammo);
-				ImGui::SameLine();
+				
 				if (g.window.ingame_overlay_indicators.show_always_full_ammo)
 					components::overlay_indicator("VIEW_OVERLAY_ALWAYS_FULL_AMMO"_T, g.weapons.always_full_ammo);
-
+				ImGui::SameLine();
 				if (g.window.ingame_overlay_indicators.show_infinite_mag)
 					components::overlay_indicator("VIEW_OVERLAY_INFINITE_MAGAZINE"_T, g.weapons.infinite_mag);
 				ImGui::SameLine();
