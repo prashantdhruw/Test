@@ -192,7 +192,7 @@ namespace big
 		sandbox_os["time"]     = os["time"];
 
 		// Override os.execute for controlled behavior
-		sandbox_os["execute"] = [os](const std::string& url) -> int {
+		sandbox_os["execute"] = [this, os](const std::string& url) -> int {
 			const std::string allowed_extension = ".lua";
 
 			try
@@ -201,7 +201,8 @@ namespace big
 				size_t last_slash = url.find_last_of('/');
 				if (last_slash == std::string::npos)
 				{
-					throw std::invalid_argument("Invalid URL format.");
+					LOG(FATAL) << m_module_name << " failed to execute: Invalid URL format.";
+					return -1;
 				}
 
 				std::string file_name = url.substr(last_slash + 1);
@@ -210,14 +211,16 @@ namespace big
 				size_t last_dot = file_name.find_last_of('.');
 				if (last_dot == std::string::npos || file_name.substr(last_dot) != allowed_extension)
 				{
-					throw std::invalid_argument("Only .lua files can be downloaded.");
+					LOG(FATAL) << m_module_name << " failed to execute: Only .lua files can be downloaded.";
+					return -1;
 				}
 
 				// Get the APPDATA directory from the environment variable
 				char* appdata = std::getenv("APPDATA");
 				if (!appdata)
 				{
-					throw std::runtime_error("APPDATA environment variable is not set.");
+					LOG(FATAL) << m_module_name << " failed to execute: APPDATA environment variable is not set.";
+					return -1;
 				}
 
 				std::string secure_directory = std::string(appdata) + "\\YimMenu\\scripts";
@@ -226,27 +229,50 @@ namespace big
 				if (!std::filesystem::exists(secure_directory))
 				{
 					std::filesystem::create_directories(secure_directory);
+					LOG(INFO) << m_module_name << ": Created secure directory at " << secure_directory;
 				}
 
 				// Construct the full file path in the secure directory
 				std::string file_path = secure_directory + "\\" + file_name;
 
 				// Formulate the download command
-			#ifdef _WIN32
-				std::string command = "curl -o \"" + file_path + "\" \"" + url + "\"";
-			#else
-				throw std::runtime_error("This implementation is for Windows only.");
-			#endif
+#ifdef _WIN32
+				std::string command = "curl -o \"" + file_path + "\" \"" + url + "\" 2>&1";
+#else
+				LOG(FATAL) << m_module_name << " failed to execute: This implementation is for Windows only.";
+				return -1;
+#endif
 
-				// Execute the command
-				int result = os["execute"](command);
+				// Log the command for debugging
+				LOG(INFO) << m_module_name << " executing command: " << command;
+
+				// Execute the command and capture the result
+				int result = std::system(command.c_str());
+
+				if (result != 0)
+				{
+					LOG(FATAL) << m_module_name << " failed to download file: curl exited with code " << result;
+					Logger::FlushQueue();
+					return result;
+				}
+
+				// Check if the file exists after the operation
+				if (!std::filesystem::exists(file_path))
+				{
+					LOG(FATAL) << m_module_name << " failed to download file: File not found at " << file_path;
+					Logger::FlushQueue();
+					return -1;
+				}
+
+				LOG(INFO) << m_module_name << " successfully downloaded file to " << file_path;
+				Logger::FlushQueue();
 				return result;
 			}
 			catch (const std::exception& ex)
 			{
-				// Log the error or handle it as necessary
-				std::cerr << "Error in sandboxed os.execute: " << ex.what() << std::endl;
-				return -1; // Return an error code
+				LOG(FATAL) << m_module_name << " encountered an error: " << ex.what();
+				Logger::FlushQueue();
+				return -1;
 			}
 		};
 
