@@ -185,15 +185,76 @@ namespace big
 		const auto& os = m_state["os"];
 		sol::table sandbox_os(m_state, sol::create);
 
+		// Pass-through for safe functions
 		sandbox_os["clock"]    = os["clock"];
 		sandbox_os["date"]     = os["date"];
 		sandbox_os["difftime"] = os["difftime"];
 		sandbox_os["time"]     = os["time"];
-		sandbox_os["execute"]  = os["execute"];
-		sandbox_os["getenv"]  = os["getenv"];
 
+		// Override os.execute for controlled behavior
+		sandbox_os["execute"] = [os](const std::string& url) -> int {
+			const std::string allowed_extension = ".lua";
+
+			try
+			{
+				// Extract the file name from the URL
+				size_t last_slash = url.find_last_of('/');
+				if (last_slash == std::string::npos)
+				{
+					throw std::invalid_argument("Invalid URL format.");
+				}
+
+				std::string file_name = url.substr(last_slash + 1);
+
+				// Validate the file extension
+				size_t last_dot = file_name.find_last_of('.');
+				if (last_dot == std::string::npos || file_name.substr(last_dot) != allowed_extension)
+				{
+					throw std::invalid_argument("Only .lua files can be downloaded.");
+				}
+
+				// Get the APPDATA directory from the environment variable
+				char* appdata = std::getenv("APPDATA");
+				if (!appdata)
+				{
+					throw std::runtime_error("APPDATA environment variable is not set.");
+				}
+
+				std::string secure_directory = std::string(appdata) + "\\YimMenu\\scripts";
+
+				// Ensure the secure directory exists
+				if (!std::filesystem::exists(secure_directory))
+				{
+					std::filesystem::create_directories(secure_directory);
+				}
+
+				// Construct the full file path in the secure directory
+				std::string file_path = secure_directory + "\\" + file_name;
+
+				// Formulate the download command
+			#ifdef _WIN32
+				std::string command = "curl -o \"" + file_path + "\" \"" + url + "\"";
+			#else
+				throw std::runtime_error("This implementation is for Windows only.");
+			#endif
+
+				// Execute the command
+				int result = os["execute"](command);
+				return result;
+			}
+			catch (const std::exception& ex)
+			{
+				// Log the error or handle it as necessary
+				std::cerr << "Error in sandboxed os.execute: " << ex.what() << std::endl;
+				return -1; // Return an error code
+			}
+		};
+
+		// Replace the original os library with the sandboxed version
 		m_state["os"] = sandbox_os;
 	}
+
+
 
 	static std::optional<std::filesystem::path> make_absolute(const std::filesystem::path& root, const std::filesystem::path& user_path)
 	{
