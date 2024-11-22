@@ -18,8 +18,7 @@ Chronix is an up-to-date menu focusing on protecting the user from toxic modders
  * [Project Structure](#project-structure)
  * [Contributing](#contributing)
  
-## How to compile YimMenu
-
+## How to compile Chronix
 Read the [SETUP](https://github.com/YimMenu/YimMenu/wiki/Setup-your-PC-for-YimMenu-Development) guide.
 
 ## Staying Up To Date
