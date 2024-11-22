@@ -5,7 +5,7 @@ namespace big
 {
 	void view::heading()
 	{
-		ImGui::SetNextWindowSize({300.f * g.window.gui_scale, 80.f * g.window.gui_scale});
+		ImGui::SetNextWindowSize({310.f * g.window.gui_scale, 80.f * g.window.gui_scale});
 		ImGui::SetNextWindowPos({10.f, 10.f});
 		if (ImGui::Begin("menu_heading", nullptr, window_flags | ImGuiWindowFlags_NoScrollbar))
 		{

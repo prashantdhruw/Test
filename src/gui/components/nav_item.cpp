@@ -34,7 +34,7 @@ namespace big
 				    {(10.f + (300.f * g.window.gui_scale)),
 				        (ImGui::GetCursorPosY() + (100.f * (g.window.gui_scale)) + ImGui::CalcTextSize("A").y
 				            + (ImGui::GetStyle().ItemInnerSpacing.y / g.window.gui_scale) * 2)},
-				    ImGui::ColorConvertFloat4ToU32({1.f, 1.f, 1.f, .15f + (.075f * nested)}));
+				    ImGui::ColorConvertFloat4ToU32({1.f, 1.f, 1.f, 0.f + (.075f * nested)}));
 				nav_item(item, nested + 1);
 			}
 		}

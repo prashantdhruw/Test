@@ -6,7 +6,7 @@ namespace big
 	void view::navigation()
 	{
 		ImGui::SetNextWindowPos({10.f, 100.f * g.window.gui_scale}, ImGuiCond_Always);
-		ImGui::SetNextWindowSize({300.f * g.window.gui_scale, 0.f}, ImGuiCond_Always);
+		ImGui::SetNextWindowSize({310.f * g.window.gui_scale, 0.f}, ImGuiCond_Always);
 
 		if (ImGui::Begin("navigation", 0, window_flags))
 		{
