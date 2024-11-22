@@ -53,7 +53,7 @@ jobs:
         run: cmake -D CMAKE_BUILD_TYPE=RelWithDebInfo -D OPTIMIZE=YES -S. -Bbuild -G Ninja
 
       - name: Build 64bit release DLL
-        run: cmake --build ./build --config RelWithDebInfo --target Chronix --
+        run: cmake --build ./build --config RelWithDebInfo --target YimMenu --
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
@@ -118,6 +118,11 @@ jobs:
               console.error(`Error deleting tag: ${error.message}`);
             }
 
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: binary
+
       - name: Echo build sha256
         id: build_sha
         run: |
@@ -143,8 +148,8 @@ jobs:
             You can download the build artifacts, generate a SHA256 checksum and compare it with the below binary.
             Build artifacts ARE NOT automatically the same as release assets since release assets can be modified afterwards.
 
-            These are nightly builds of Chronix, they are provided for testing purposes only:
-            - Test if your build environment produces a broken Chronix.dll
+            These are nightly builds of YimMenu, they are provided for testing purposes only:
+            - Test if your build environment produces a broken YimMenu.dll
             - Test if source code is out of date and no longer compatible with the current version of GTA V
 
             If you wish to use this menu as-is you are on your own, no warranty is provided.
