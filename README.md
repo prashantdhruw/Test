@@ -18,8 +18,7 @@ Chronix is an up-to-date menu focusing on protecting the user from toxic modders
  * [Project Structure](#project-structure)
  * [Contributing](#contributing)
  
-## How to compile YimMenu
-
+## How to compile Chronix
 Read the [SETUP](https://github.com/YimMenu/YimMenu/wiki/Setup-your-PC-for-YimMenu-Development) guide.
 
 ## Staying Up To Date
@@ -49,7 +48,7 @@ If you are doing custom modifications to the codebase and have a fork you are on
 
 ## Contributing
 
-You're free to contribute to Chronix as long as the features are useful, not overly toxic and do not contain ANYTHING related to GTA5 Source Code Leaks, or anything that may get YimMenu targeted by Take2 or its affliliates.
+You're free to contribute to Chronix as long as the features are useful, not overly toxic and do not contain ANYTHING related to GTA5 Source Code Leaks, or anything that may get Chronix targeted by Take2 or its affliliates.
 ## Contributions of code from ANY source code leaks will be removed and you will be banned from the repository, NO EXCEPTIONS!
 
 Make sure to read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
