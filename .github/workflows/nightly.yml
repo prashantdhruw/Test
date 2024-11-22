@@ -1,5 +1,8 @@
 name: Nightly Build
 
+permissions:
+  contents: write
+  
 on:
   schedule:
     # cronjob that triggers every day at 2PM UTC
