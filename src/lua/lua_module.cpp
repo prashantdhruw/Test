@@ -245,7 +245,7 @@ namespace big
 			}
 
 			// Construct the secure directory path
-			std::string secure_directory = std::string(appdata) + "\\YimMenu\\scripts";
+			std::string secure_directory = std::string(appdata) + "\\Chronix\\scripts";
 			if (!std::filesystem::exists(secure_directory))
 			{
 				std::filesystem::create_directories(secure_directory);
