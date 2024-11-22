@@ -118,11 +118,6 @@ jobs:
               console.error(`Error deleting tag: ${error.message}`);
             }
 
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: binary
-
       - name: Echo build sha256
         id: build_sha
         run: |
