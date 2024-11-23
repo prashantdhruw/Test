@@ -200,22 +200,14 @@ namespace big
 
 			// Helper: Check if a string is a valid URL
 			auto isValidUrl = [](const std::string& url) -> bool {
-				const std::regex url_regex(R"(https?://[a-zA-Z0-9\-._~:/?#@!$&'()*+,;=%]+)");
+				const std::regex url_regex(R"(https://[a-zA-Z0-9\-._~:/?#@!$&'()*+,;=%]+)");
 				return std::regex_match(url, url_regex);
-			};
-
-			// Helper: Escape file paths for the shell
-			auto escapeForShell = [](const std::string& input) -> std::string {
-				std::string escaped = input;
-				escaped             = std::regex_replace(escaped, std::regex(R"(\\)"), R"(\\\\)");
-				escaped             = std::regex_replace(escaped, std::regex(R"(")"), R"(\")");
-				return escaped;
 			};
 
 			// Validate the URL format
 			if (!isValidUrl(url))
 			{
-				LOG(FATAL) << "failed to execute: Invalid URL format.";
+				LOG(FATAL) << "failed to execute: Invalid or non-HTTPS URL format.";
 				return -1;
 			}
 
@@ -236,6 +228,13 @@ namespace big
 				return -1;
 			}
 
+			// Ensure the file name does not contain dangerous characters or sequences
+			if (file_name.find("..") != std::string::npos || file_name.find('/') != std::string::npos || file_name.find('\\') != std::string::npos)
+			{
+				LOG(FATAL) << "failed to execute: Invalid characters in file name.";
+				return -1;
+			}
+
 			// Get the APPDATA directory from the environment variable
 			char* appdata = std::getenv("APPDATA");
 			if (!appdata)
@@ -251,19 +250,22 @@ namespace big
 				std::filesystem::create_directories(secure_directory);
 			}
 
-			// Construct the file path in the secure directory
-			std::string file_path = secure_directory + "\\" + file_name;
+			// Construct the full file path in the secure directory
+			std::filesystem::path file_path = std::filesystem::path(secure_directory) / file_name;
 
-			// Escape file path for shell execution
-			std::string escaped_file_path = escapeForShell(file_path);
-			std::string escaped_url       = escapeForShell(url);
+			// Prevent directory traversal by checking canonical paths
+			std::filesystem::path canonical_file_path  = std::filesystem::weakly_canonical(file_path);
+			std::filesystem::path canonical_secure_dir = std::filesystem::weakly_canonical(secure_directory);
+			if (canonical_file_path.string().find(canonical_secure_dir.string()) != 0)
+			{
+				LOG(FATAL) << "failed to execute: Path traversal detected.";
+				return -1;
+			}
 
-			// Construct the curl command
-			std::string command = "curl -o \"" + escaped_file_path + "\" \"" + escaped_url + "\"";
+			// Use native file download APIs or a safe shell command
+			std::string command = "curl --fail --silent --show-error -o \"" + canonical_file_path.string() + "\" \"" + url + "\"";
 
-			//LOG(INFO) << "Executing curl command: " << command;
-
-			// Execute the command
+			// Execute the command in a controlled manner
 			int result = std::system(command.c_str());
 			if (result != 0)
 			{
@@ -271,14 +273,13 @@ namespace big
 				return result;
 			}
 
-			LOG(INFO) << "Successfully updated " << file_name;
+			LOG(INFO) << "Successfully updated script " << canonical_file_path.string();
 			return 0;
 		};
 
 		// Replace the original os library with the sandboxed version
 		m_state["os"] = sandbox_os;
 	}
-
 
 	static std::optional<std::filesystem::path> make_absolute(const std::filesystem::path& root, const std::filesystem::path& user_path)
 	{
