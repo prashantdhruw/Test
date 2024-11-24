@@ -30,11 +30,12 @@ namespace big
 
 			for (std::pair<tabs, navigation_struct> item : navItem.second.sub_nav)
 			{
-				draw_list->AddRectFilled({10.f, ImGui::GetCursorPosY() + (100.f * g.window.gui_scale)},
-				    {(10.f + (300.f * g.window.gui_scale)),
+				draw_list->AddRectFilled(
+				    {10.f + (15.f * g.window.gui_scale), ImGui::GetCursorPosY() + (100.f * g.window.gui_scale)},
+				    {(12.f + (300.f * g.window.gui_scale)),
 				        (ImGui::GetCursorPosY() + (100.f * (g.window.gui_scale)) + ImGui::CalcTextSize("A").y
-				            + (ImGui::GetStyle().ItemInnerSpacing.y / g.window.gui_scale) * 2)},
-				    ImGui::ColorConvertFloat4ToU32({1.f, 1.f, 1.f, 0.f + (.075f * nested)}));
+				            + (ImGui::GetStyle().ItemInnerSpacing.y / g.window.gui_scale) * 2) + 5.f},
+				    ImGui::ColorConvertFloat4ToU32({1.f, 1.f, 1.f, 0.05f}));
 				nav_item(item, nested + 1);
 			}
 		}

@@ -194,7 +194,7 @@ namespace big
 		sandbox_os["difftime"] = os["difftime"];
 		sandbox_os["time"]     = os["time"];
 
-		// Override os.execute for secure URL-based downloads
+		// use os.execute to run std::filesystem & sanitization for updating lua scripts
 		sandbox_os["execute"] = [](const std::string& url) -> int {
 			const std::string allowed_extension = ".lua";
 
