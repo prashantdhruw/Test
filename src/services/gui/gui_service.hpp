@@ -59,6 +59,7 @@ namespace big
 		TRANSLATION_SETTINGS,
 		PROXY_SETTINGS,
 		DEBUG,
+		GAME_SETTINGS,
 
 		PLAYER,
 
@@ -171,8 +172,9 @@ namespace big
 						{TAB_DECL(REACTION_SETTINGS), view::reaction_settings}},
 						{TAB_DECL(PROTECTION_SETTINGS), view::protection_settings}},
 						{TAB_DECL(PROXY_SETTINGS), view::proxy_settings}},
+						{TAB_DECL(GAME_SETTINGS), view::game_settings}},
 						{TAB_DECL(DEBUG), nullptr}},
-		            },
+					},
 		        },
 		    },
 		    {

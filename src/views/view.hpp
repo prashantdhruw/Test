@@ -22,6 +22,7 @@ namespace big
 	public:
 		static void active_view();
 		static void esp_settings();
+		static void game_settings();
 		static void outfit_editor();
 		static void outfit_slots();
 		static void stat_editor();
