@@ -17,6 +17,7 @@ namespace big
 
 	public:
 		static bool nav_button(const std::string_view);
+		static bool header_button(const std::string_view text, float xPos = 0.0f, float yPos = 0.0f, const std::string tooltip = "", float width = -1.f, float height = -1.f);
 		static void icon(const std::string_view);
 		static void small_text(const std::string_view);
 		static void sub_title(const std::string_view);

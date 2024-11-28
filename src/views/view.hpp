@@ -9,6 +9,8 @@ constexpr auto listbox_height = 0.2f;
 
 namespace big
 {
+	extern ID3D11Device* g_device;
+	extern ID3D11DeviceContext* g_deviceContext;
 	extern char custom_respawn_text[128];
 	inline ImVec2 get_listbox_dimensions()
 	{

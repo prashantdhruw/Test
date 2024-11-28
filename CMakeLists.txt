@@ -36,6 +36,7 @@ file(GLOB_RECURSE SRC_MAIN
     "${SRC_DIR}/**.cc"
     "${SRC_DIR}/**.cxx"
     "${SRC_DIR}/**.asm"
+    "${SRC_DIR}/**.c"
 )
 
 if (MSVC)
@@ -54,6 +55,7 @@ set_target_properties(YimMenu PROPERTIES OUTPUT_NAME "Chronix")
 
 source_group(TREE ${SRC_DIR} PREFIX "src" FILES ${SRC_MAIN} )
 
+# Include GLEW headers
 target_include_directories(YimMenu PRIVATE 
     "${SRC_DIR}"
     "${json_SOURCE_DIR}/single_include"

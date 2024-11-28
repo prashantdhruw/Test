@@ -23,7 +23,6 @@ namespace big
 		if (!g_pointers->m_gta.m_swapchain || !*g_pointers->m_gta.m_swapchain)
 		{
 			LOG(FATAL) << "Invalid swapchain ptr";
-
 			return false;
 		}
 		m_dxgi_swapchain = *g_pointers->m_gta.m_swapchain;
@@ -31,18 +30,23 @@ namespace big
 		if (m_dxgi_swapchain->GetDevice(__uuidof(ID3D11Device), reinterpret_cast<void**>(&m_d3d_device)) < 0)
 		{
 			LOG(FATAL) << "Failed to get D3D device.";
-
 			return false;
 		}
+
+		// Assign the created D3D device to the global g_device
+		g_device = m_d3d_device;
+
+		// Get the immediate context from the D3D device
 		m_d3d_device->GetImmediateContext(&m_d3d_device_context);
 
-		auto file_path = g_file_manager.get_project_file("./imgui.ini").get_path();
-
+		// Set up ImGui
+		auto file_path    = g_file_manager.get_project_file("./imgui.ini").get_path();
 		ImGuiContext* ctx = ImGui::CreateContext();
 
 		static std::string path = file_path.make_preferred().string();
 		ctx->IO.IniFilename     = path.c_str();
 
+		// Initialize ImGui for DirectX 11 and Win32
 		ImGui_ImplDX11_Init(m_d3d_device, m_d3d_device_context);
 		ImGui_ImplWin32_Init(g_pointers->m_hwnd);
 
