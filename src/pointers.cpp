@@ -1988,6 +1988,15 @@ namespace big
             {
                 g_pointers->m_gta.m_network_can_access_multiplayer = ptr.add(10).rip().as<PVOID>();
             }
+        },
+        // BattlEye Network Bail Patch
+        {
+            "BENBP",
+            "83 25 ? ? ? ? 00 89 0D ? ? ? ? 85 C9",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_be_network_bail_patch = ptr.add(17).rip().add(1).rip().as<PVOID>();
+            }
         }
         >(); // don't leave a trailing comma at the end
 
