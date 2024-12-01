@@ -12,6 +12,7 @@ namespace big
 	extern ID3D11Device* g_device;
 	extern ID3D11DeviceContext* g_deviceContext;
 	extern char custom_respawn_text[128];
+	extern char custom_off_radar_text[128];
 	inline ImVec2 get_listbox_dimensions()
 	{
 		return {750 * listbox_width, 1000 * listbox_height};

@@ -3,7 +3,6 @@
 
 namespace big
 {
-	char custom_respawn_text[128] = "WASTED";
 	void view::gui_settings()
 	{
 		components::sub_title("SETTINGS_UI_SCALE"_T);
