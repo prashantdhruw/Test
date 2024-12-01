@@ -441,7 +441,7 @@ namespace big
 			bool chat_commands                                   = false;
 			CommandAccessLevel chat_command_default_access_level = CommandAccessLevel::FRIENDLY;
 
-			bool kick_host_when_forcing_host = false;
+			bool kick_host_when_forcing_host = true;
 			bool exclude_modders_from_kick_host = false;
 
 			bool explosion_karma = false;

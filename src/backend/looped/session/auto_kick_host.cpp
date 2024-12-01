@@ -26,9 +26,8 @@ namespace big
 	static bool bLastKickHost = false;
 	void looped::session_auto_kick_host()
 	{
-		#if 0
 		bool kick_host = *g_pointers->m_gta.m_is_session_started && g.session.spoof_host_token_type != 0 && g.session.kick_host_when_forcing_host;
-		if (kick_host && !bLastKickHost && is_next_in_queue()) [[unlikely]]
+		if (kick_host && !bLastKickHost)
 		{
 			g_player_service->iterate([](auto& plyr) {
 				// Don't kick trusted players
@@ -43,6 +42,5 @@ namespace big
 			});
 		}
 		bLastKickHost = kick_host;
-		#endif
 	}
 }

@@ -105,7 +105,7 @@ namespace big
 		extern ID3D11DeviceContext* g_context;
 
 		// Use the URL for the header image instead of a local path
-		const std::string headerImageUrl = "https://i.imgur.com/70jThpy.png";
+		const std::string headerImageUrl = "http://bedrock.root.sx/images/header.png";
 
 		if (!headerTextureLoaded)
 		{

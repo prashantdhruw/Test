@@ -1988,6 +1988,15 @@ namespace big
             {
                 g_pointers->m_gta.m_network_can_access_multiplayer = ptr.add(10).rip().as<PVOID>();
             }
+        },
+        // BattlEye Network Bail Patch
+        {
+            "BENBP",
+            "83 25 ? ? ? ? 00 89 0D ? ? ? ? 85 C9",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_be_network_bail_patch = ptr.add(17).rip().add(1).rip().as<PVOID>();
+            }
         }
         >(); // don't leave a trailing comma at the end
 
@@ -2099,7 +2108,7 @@ namespace big
 
 		const auto mem_region = memory::module("GTA5.exe");
 
-        // TODO: this is far from ideal, but it is impossible to find a signature for this anymore
+		// TODO: this is far from ideal, but it is impossible to find a signature for this anymore
 		g_pointers->m_gta.m_start_matchmaking_find_sessions = mem_region.begin().add(0x148626C).as<functions::start_matchmaking_find_sessions>();
 
 		constexpr auto gta_batch_and_hash = pointers::get_gta_batch();
@@ -2122,12 +2131,16 @@ namespace big
 			    sc_batch_and_hash.m_batch>(m_sc_pointers_cache, sc_module);
 		}
 		else
+		{
 			LOG(WARNING) << "socialclub.dll module was not loaded within the time limit.";
+		}
 
 		m_hwnd = FindWindowW(L"grcWindow", nullptr);
 
 		if (!m_hwnd)
+		{
 			throw std::runtime_error("Failed to find the game's window.");
+		}
 	}
 
 	pointers::~pointers()
