@@ -11,19 +11,18 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <random>
 
 namespace big
 {
 	ID3D11Device* g_device = nullptr;
 
-	// Function to fetch data from a URL into memory
 	size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 	{
 		((std::vector<unsigned char>*)userp)->insert(((std::vector<unsigned char>*)userp)->end(), (unsigned char*)contents, (unsigned char*)contents + size * nmemb);
 		return size * nmemb;
 	}
 
-	// Load image directly from URL
 	ID3D11ShaderResourceView* LoadTextureFromURL(const std::string& imageUrl, ID3D11Device* device)
 	{
 		std::vector<unsigned char> buffer;
@@ -36,7 +35,7 @@ namespace big
 			CURLcode res = curl_easy_perform(curl);
 			if (res != CURLE_OK)
 			{
-				LOG(FATAL) << "Failed to download image: " << curl_easy_strerror(res);
+				//LOG(FATAL) << "Failed to download image: " << curl_easy_strerror(res);
 				curl_easy_cleanup(curl);
 				return nullptr;
 			}
@@ -48,7 +47,7 @@ namespace big
 
 		if (!image_data)
 		{
-			LOG(FATAL) << "Failed to load image from memory.";
+			//LOG(FATAL) << "Failed to load image from memory.";
 			return nullptr;
 		}
 
@@ -104,16 +103,22 @@ namespace big
 		extern ID3D11Device* g_device;
 		extern ID3D11DeviceContext* g_context;
 
-		// Use the URL for the header image instead of a local path
-		const std::string headerImageUrl = "http://bedrock.root.sx/images/header.png";
+		std::string headerImageUrl = "http://bedrock.root.sx/images/" + g.window.selected_header_image;
 
-		if (!headerTextureLoaded)
+		if (!headerTextureLoaded || g.window.selected_header_image_changed)
 		{
+			if (headerTexture)
+			{
+				headerTexture->Release();
+				headerTexture = nullptr;
+			}
+
 			headerTexture = LoadTextureFromURL(headerImageUrl, g_device);
 
 			if (headerTexture)
 			{
-				headerTextureLoaded = true;
+				headerTextureLoaded                    = true;
+				g.window.selected_header_image_changed = false;
 			}
 		}
 

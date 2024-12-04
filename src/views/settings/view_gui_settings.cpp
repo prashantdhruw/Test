@@ -14,6 +14,32 @@ namespace big
 			g_renderer.rescale(g.window.gui_scale);
 		}
 
+		components::sub_title("Header Image"_T);
+		// Define the list of available header images
+		static std::vector<std::string> header_names  = {"Chronix (Purple)", "Chronix (Grey)", "Chronix (Rasta)", "Chronix (Red)"};
+		static std::vector<std::string> header_images = {"header1.png", "header2.png", "header3.png", "header4.png"};
+		static int selected_header_index              = 0;
+
+		// Display combo box
+		if (ImGui::BeginCombo("Select Header Image", header_names[selected_header_index].c_str()))
+		{
+			for (int i = 0; i < header_names.size(); i++)
+			{
+				const bool is_selected = (selected_header_index == i);
+				if (ImGui::Selectable(header_names[i].c_str(), is_selected))
+				{
+					selected_header_index                  = i;
+					g.window.selected_header_image         = header_images[selected_header_index];
+					g.window.selected_header_image_changed = true; // Mark the change
+				}
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus(); // Ensure the selected item is highlighted
+				}
+			}
+			ImGui::EndCombo();
+		}
+
 		components::sub_title("SETTINGS_UI_COLOR"_T);
 		static ImVec4 col_gui = ImGui::ColorConvertU32ToFloat4(g.window.background_color);
 		if (ImGui::ColorEdit4("SETTINGS_UI_COLOR_PICKER"_T.data(), (float*)&col_gui, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))

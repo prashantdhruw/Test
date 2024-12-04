@@ -420,7 +420,7 @@ namespace big
 			bool decloak_players                   = false;
 			bool unhide_players_from_player_list   = true;
 			int spoof_host_token_type              = 0;
-			std::uint64_t custom_host_token        = 0x000000200235F2EA;
+			std::uint64_t custom_host_token        = 0xD15D22667BE4F942;
 			bool hide_token_spoofing_when_host     = true;
 			bool force_script_host                 = false;
 			bool player_magnet_enabled             = false;
@@ -941,11 +941,14 @@ namespace big
 
 		struct window
 		{
-			ImU32 background_color = 3696311571;
+			ImU32 background_color = 3717464384;
 			ImU32 text_color       = 4294967295;
-			ImU32 button_color     = 2947901213;
-			ImU32 frame_color      = 2942518340;
+			ImU32 button_color     = 2936061451;
+			ImU32 frame_color      = 2936012800;
 			float gui_scale        = 1.f;
+			std::string selected_header_image  = "header1.png";
+			bool selected_header_image_changed = false;
+
 
 			ImFont* font_title     = nullptr;
 			ImFont* font_sub_title = nullptr;
@@ -957,7 +960,7 @@ namespace big
 
 			struct ingame_overlay
 			{
-				bool opened                = true;
+				bool opened                = false;
 				bool show_with_menu_opened = false;
 
 				bool show_fps              = true;
@@ -1004,7 +1007,7 @@ namespace big
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(gui, format_money)
 			} gui{};
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(window, background_color, demo, text_color, button_color, frame_color, gui_scale, switched_view, ingame_overlay, vehicle_control, ingame_overlay_indicators, gui)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(window, background_color, demo, text_color, button_color, frame_color, gui_scale, selected_header_image, selected_header_image_changed, switched_view, ingame_overlay, vehicle_control, ingame_overlay_indicators, gui)
 		} window{};
 
 		struct context_menu
