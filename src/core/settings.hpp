@@ -948,6 +948,7 @@ namespace big
 			float gui_scale        = 1.f;
 			std::string selected_header_image  = "header1.png";
 			bool selected_header_image_changed = false;
+			bool themes_enabled                = false;
 
 
 			ImFont* font_title     = nullptr;
@@ -1007,7 +1008,7 @@ namespace big
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(gui, format_money)
 			} gui{};
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(window, background_color, demo, text_color, button_color, frame_color, gui_scale, selected_header_image, selected_header_image_changed, switched_view, ingame_overlay, vehicle_control, ingame_overlay_indicators, gui)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(window, background_color, demo, text_color, button_color, frame_color, gui_scale, selected_header_image, selected_header_image_changed, themes_enabled, switched_view, ingame_overlay, vehicle_control, ingame_overlay_indicators, gui)
 		} window{};
 
 		struct context_menu
