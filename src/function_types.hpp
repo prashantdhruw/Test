@@ -111,7 +111,7 @@ namespace big::functions
 	using read_bitbuffer_into_sync_tree = void (*)(rage::netSyncTree* tree, uint64_t flag, uint32_t flag2, rage::datBitBuffer* buffer, uint64_t netLogStub);
 	//Sync signatures END
 
-	using reset_network_complaints = void (*)(CNetComplaintMgr* mgr);
+	using reset_network_complaints = void (*)(CNetComplaintMgr* mgr, bool force);
 
 	using fidevice_get_device = rage::fiDevice* (*)(const char* path, bool allow_root);
 	using fipackfile_ctor     = rage::fiPackfile* (*)(rage::fiPackfile* this_);
@@ -214,13 +214,13 @@ namespace big::functions
 
 	using cam_gameplay_directory_update = bool (*)(uintptr_t this_);
 
-	using get_searchlight = void* (*) (CPed*);
+	using get_searchlight = void* (*)(CPed*);
 
-	using get_sector_data = void (*) (rage::fvector3* coords, std::uint16_t* x, std::uint16_t* y, std::uint16_t* z, rage::fvector3* sector_pos);
+	using get_sector_data = void (*)(rage::fvector3* coords, std::uint16_t* x, std::uint16_t* y, std::uint16_t* z, rage::fvector3* sector_pos);
 
-	using get_peer_by_security_id = rage::SecurityPeer*(*)(int id);
+	using get_peer_by_security_id = rage::SecurityPeer* (*)(int id);
 
-	using set_head_blend_data = void(*)(CPed* ped, CHeadBlendData* data);
+	using set_head_blend_data = void (*)(CPed* ped, CHeadBlendData* data);
 
 	using create_chat_guid = void (*)(GUID* guid);
 

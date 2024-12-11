@@ -64,8 +64,6 @@ namespace big
 
 		memory::handle m_crash_trigger;
 
-		memory::handle m_window_hook;
-
 		memory::handle m_script_vm_patch_1;
 		memory::handle m_script_vm_patch_2;
 		memory::handle m_script_vm_patch_3;
@@ -395,8 +393,6 @@ namespace big
 		functions::set_head_blend_data m_set_head_blend_data;
 
 		std::uint32_t* m_object_ids_offset;
-
-		PVOID m_error_packet_memmove;
 
 		PVOID m_create_pool_item;
 

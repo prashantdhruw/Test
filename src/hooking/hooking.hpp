@@ -1,9 +1,9 @@
 #pragma once
 #include "MinHook.h"
+#include "call_hook.hpp"
 #include "detour_hook.hpp"
 #include "vmt_hook.hpp"
 #include "vtable_hook.hpp"
-#include "call_hook.hpp"
 
 #include <gta/enums.hpp>
 #include <network/netConnection.hpp> // cannot stub this
@@ -210,8 +210,6 @@ namespace big
 		static std::uint32_t get_dlc_hash(void* mgr, std::uint32_t seed);
 		static bool add_gamer_to_session(rage::netConnectionManager* mgr, std::uint32_t msg_id, int* req_id, RemoteGamerInfoMsg* info, int flags, void* a6);
 
-		static void error_packet_memmove(void* dst, void* src, int size);
-
 		static void* create_pool_item(GenericPool* pool);
 
 		static uint32_t network_can_access_multiplayer(uint32_t a1, uint64_t* a2);
@@ -304,8 +302,6 @@ namespace big
 
 		vmt_hook m_swapchain_hook;
 		vtable_hook m_sync_data_reader_hook;
-
-		call_hook m_error_packet_memmove_hook;
 
 		WNDPROC m_og_wndproc = nullptr;
 

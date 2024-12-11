@@ -6,8 +6,7 @@ namespace big
 {
 	hooking::hooking() :
 	    m_swapchain_hook(*g_pointers->m_gta.m_swapchain, hooks::swapchain_num_funcs),
-	    m_sync_data_reader_hook(g_pointers->m_gta.m_sync_data_reader_vtable, 27),
-	    m_error_packet_memmove_hook(g_pointers->m_gta.m_error_packet_memmove, hooks::error_packet_memmove)
+	    m_sync_data_reader_hook(g_pointers->m_gta.m_sync_data_reader_vtable, 27)
 	{
 		m_swapchain_hook.hook(hooks::swapchain_present_index, &hooks::swapchain_present);
 		m_swapchain_hook.hook(hooks::swapchain_resizebuffers_index, &hooks::swapchain_resizebuffers);
@@ -83,9 +82,9 @@ namespace big
 		detour_hook_helper::add<hooks::serialize_join_request_message>("SJRM", g_pointers->m_gta.m_serialize_join_request_message);
 		detour_hook_helper::add<hooks::serialize_join_request_message_2>("SJRM2", g_pointers->m_gta.m_serialize_join_request_message_2);
 
-		#if 0
+#if 0
 		detour_hook_helper::add<hooks::start_matchmaking_find_sessions>("SMFS", g_pointers->m_gta.m_start_matchmaking_find_sessions);
-		#endif
+#endif
 
 		detour_hook_helper::add<hooks::broadcast_net_array>("BNA", g_pointers->m_gta.m_broadcast_net_array);
 
@@ -138,7 +137,7 @@ namespace big
 		detour_hook_helper::add<hooks::can_create_vehicle>("CCV", g_pointers->m_gta.m_can_create_vehicle);
 
 		detour_hook_helper::add<hooks::aimbot_cam_gameplay_director_update>("CGDU", g_pointers->m_gta.m_cam_gameplay_director_update);
-        
+
 		detour_hook_helper::add<hooks::format_int>("FI", g_pointers->m_gta.m_format_int);
 
 		detour_hook_helper::add<hooks::searchlight_crash>("SLC", g_pointers->m_gta.m_searchlight_crash);
@@ -147,7 +146,7 @@ namespace big
 		detour_hook_helper::add<hooks::update_session_advertisement>("USA", g_pointers->m_gta.m_update_session_advertisement);
 		detour_hook_helper::add<hooks::unadvertise_session>("US", g_pointers->m_gta.m_unadvertise_session);
 		detour_hook_helper::add<hooks::send_session_detail_msg>("SSDM", g_pointers->m_gta.m_send_session_detail_msg);
-  
+
 		detour_hook_helper::add<hooks::write_node_data>("WND", g_pointers->m_gta.m_write_node_data);
 		detour_hook_helper::add<hooks::can_send_node_to_player>("CSNTP", g_pointers->m_gta.m_can_send_node_to_player);
 		detour_hook_helper::add<hooks::write_node>("WN", g_pointers->m_gta.m_write_node);
@@ -177,7 +176,6 @@ namespace big
 	{
 		m_swapchain_hook.enable();
 		m_sync_data_reader_hook.enable();
-		m_error_packet_memmove_hook.enable();
 		m_og_wndproc = WNDPROC(SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, LONG_PTR(&hooks::wndproc)));
 
 		for (auto& detour_hook_helper : m_detour_hook_helpers)
@@ -200,7 +198,6 @@ namespace big
 		}
 
 		SetWindowLongPtrW(g_pointers->m_hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(m_og_wndproc));
-		m_error_packet_memmove_hook.disable();
 		m_sync_data_reader_hook.disable();
 		m_swapchain_hook.disable();
 
