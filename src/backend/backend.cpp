@@ -21,12 +21,14 @@ namespace big
 {
 	void bypass_battleye()
 	{
-		constexpr std::array<std::uint32_t, 16> valid_hashes = {1410389794, 967, 1523678325, 472, 0, 0, 1323039495, 0, 0, 1731098795, 2256610353, 17956, 414639110, 307143837, 3443181821, 0};
+		constexpr std::array<std::uint32_t, 16> valid_hashes = {4022154788, 988, 3512952254, 472, 0, 0, 3308328917, 0, 0, 1731098795, 2256610353, 18616, 1540917665, 307143837, 1629784955, 2012170620};
 
 		if (auto hashes = *g_pointers->m_gta.m_game_data_hash)
 		{
 			for (int i = 0; i < valid_hashes.size(); i++)
+			{
 				hashes->m_data[i] = valid_hashes[i];
+			}
 		}
 	}
 
@@ -35,7 +37,9 @@ namespace big
 		bypass_battleye();
 
 		for (auto& command : g_bool_commands)
+		{
 			command->refresh();
+		}
 
 		register_script_patches();
 
@@ -56,8 +60,12 @@ namespace big
 			looped::system_mission_creator();
 
 			for (auto command : g_looped_commands)
+			{
 				if (command->is_enabled())
+				{
 					command->on_tick();
+				}
+			}
 
 			script::get_current()->yield();
 		}
@@ -144,7 +152,9 @@ namespace big
 			looped::session_modder_detection();
 
 			if (g_script_connection_service)
+			{
 				g_script_connection_service->on_tick();
+			}
 
 			script::get_current()->yield();
 		}
@@ -208,9 +218,13 @@ namespace big
 			if (g.world.orbital_drone.enabled && PAD::IS_CONTROL_JUST_PRESSED(2, (int)ControllerInputs::INPUT_VEH_LOOK_BEHIND))
 			{
 				if (!g_orbital_drone_service.initialized())
+				{
 					g_orbital_drone_service.init();
+				}
 				else
+				{
 					g_orbital_drone_service.destroy();
+				}
 			}
 
 			g_orbital_drone_service.tick();

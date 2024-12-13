@@ -1,10 +1,11 @@
 #include "battleye_service.hpp"
-#include "services/players/player_service.hpp"
+
+#include "backend/looped_command.hpp"
 #include "packet.hpp"
 #include "script_mgr.hpp"
+#include "services/players/player_service.hpp"
 #include "thread_pool.hpp"
 #include "util/session.hpp"
-#include "backend/looped_command.hpp"
 
 #include <network/snSession.hpp>
 
@@ -69,9 +70,9 @@ namespace big
 		}
 	};
 
-	#if 0
+//#if 0
 	battleye_server g_battleye_server("battleyeserver", "BATTLEYE_SERVER", "BATTLEYE_SERVER_DESC", g.debug.battleye_server);
-	#endif
+//#endif
 
 	bool battleye_service::is_running()
 	{
@@ -147,7 +148,9 @@ namespace big
 					{
 						for (auto& [_, player] : g_player_service->players())
 						{
-							add_player(player->get_net_game_player()->get_host_token(), player->get_rockstar_id(), player->get_name());
+							add_player(player->get_net_game_player()->get_host_token(),
+							    player->get_rockstar_id(),
+							    player->get_name());
 						}
 					}
 					was_host = is_host;
@@ -203,7 +206,7 @@ namespace big
 
 		m_battleye_user_data.m_game_name = "paradise";
 		m_battleye_user_data.m_log_func  = [](const char* message, int level) {
-			LOG(INFO) << "BattlEye: " << message;
+            LOG(INFO) << "BattlEye: " << message;
 		};
 		m_battleye_user_data.m_kick_player = [](std::uint64_t player, const char* reason) {
 			g_battleye_service.kick_player(player, reason);
@@ -214,10 +217,17 @@ namespace big
 		if (reinterpret_cast<init_t>(GetProcAddress(handle, "Init"))(1, &m_battleye_user_data, &m_battleye_api))
 		{
 			// background thread (not game thread)
-			g_thread_pool->push([this] { this->thread_func(); });
+			g_thread_pool->push([this] {
+				this->thread_func();
+			});
 
 			// background script (game thread)
-			g_script_mgr.add_script(std::make_unique<big::script>([this] { this->script_func(); }, "BE Background Script", false));
+			g_script_mgr.add_script(std::make_unique<big::script>(
+			    [this] {
+				    this->script_func();
+			    },
+			    "BE Background Script",
+			    false));
 		}
 		else
 		{
@@ -280,5 +290,47 @@ namespace big
 		}
 
 		m_battleye_api.m_receive_message(token, const_cast<const void*>(message), size);
+	}
+
+	void battleye_service::on_receive_message_from_server(std::uint64_t token, void* message, int size)
+	{
+		if (size == 0)
+		{
+			return;
+		}
+
+		auto msg = reinterpret_cast<unsigned char*>(message);
+		auto op  = msg[0];
+
+		switch (op)
+		{
+		case INIT:
+		{
+			std::uint8_t payload[] = {0x0, 0x5};
+			send_message_to_server(token, payload, sizeof(payload));
+			break;
+		}
+		case START:
+		{
+			LOG(INFO) << "BattlEye: Our GUID: " << (char*)&msg[3];
+			send_message_to_server(token, message, 2);
+			break;
+		}
+		case HEARTBEAT:
+		{
+			send_message_to_server(token, message, size);
+
+			break;
+		}
+		case REQUEST:
+		{
+			if (size == 1028)
+			{
+				break;
+			}
+			send_message_to_server(token, message, 2);
+			break;
+		}
+		}
 	}
 }
