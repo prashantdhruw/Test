@@ -5,7 +5,7 @@
 #include "script.hpp"
 #include "util/mobile.hpp"
 
-#define MAX_GARAGE_NUM 32
+#define MAX_GARAGE_NUM 33
 
 namespace big
 {
@@ -44,6 +44,7 @@ namespace big
 		case 28: return 350;
 		case 29: return 363;
 		case 31: return 515;
+		case 32: return 537;
 		case MAX_GARAGE_NUM + 0: return 156; //Mobile Operations Center
 		case MAX_GARAGE_NUM + 1: return 224; //Nightclub B1
 		case MAX_GARAGE_NUM + 2: return 223; //Terrorbyte
@@ -72,6 +73,7 @@ namespace big
 		case 20:
 		case 21:
 		case 22:
+		case 32:
 		case 25: return 10;
 		case 13: return 11;
 		case 0:
@@ -130,6 +132,7 @@ namespace big
 		case 28: stat = self::char_index ? "MP1_MULTI_PROPERTY_9"_J : "MP0_MULTI_PROPERTY_9"_J; break;
 		case 29: stat = self::char_index ? "MP1_MULTSTOREY_GAR_OWNED"_J : "MP0_MULTSTOREY_GAR_OWNED"_J; break;
 		case 31: stat = self::char_index ? "MP1_PROP_BAIL_OFFICE"_J : "MP0_PROP_BAIL_OFFICE"_J; break;
+		case 32: stat = self::char_index ? "MP1_PROP_HACKER_DEN"_J : "MP0_PROP_HACKER_DEN"_J; break;
 		case MAX_GARAGE_NUM + 0:
 		case MAX_GARAGE_NUM + 1:
 		case MAX_GARAGE_NUM + 2:
@@ -206,6 +209,7 @@ namespace big
 			}
 		}
 		case 31: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("BO_GARNAME");              //Bail Office
+		case 32: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("HD_GARNAME");              //Garment Factory
 		case MAX_GARAGE_NUM + 0: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("GRTRUCK"); //Mobile Operations Center
 		case MAX_GARAGE_NUM + 1: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR0");  //Nightclub B1
 		case MAX_GARAGE_NUM + 2: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_CLUBT"); //Terrorbyte
@@ -356,7 +360,7 @@ namespace big
 				script::get_current()->yield();
 			}
 
-			auto veh_idx_global = scr_globals::vehicle_global.at(i, 142);
+			auto veh_idx_global = scr_globals::vehicle_global.at(i, 143);
 
 			const auto hash   = *veh_idx_global.at(66).as<Hash*>();
 			const auto& it    = m_pv_lookup.find(i);

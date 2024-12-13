@@ -1,5 +1,5 @@
-#include "backend/looped_command.hpp"
 #include "backend/bool_command.hpp"
+#include "backend/looped_command.hpp"
 #include "core/scr_globals.hpp"
 #include "natives.hpp"
 
@@ -14,7 +14,9 @@ namespace big
 		virtual void on_tick() override
 		{
 			if (g.self.ghost_org)
-				MISC::SET_BIT(scr_globals::freemode_global.at(4682).as<int*>(), 2);
+			{
+				MISC::SET_BIT(scr_globals::freemode_global.at(4698).as<int*>(), 2);
+			}
 			scr_globals::globalplayer_bd.as<GlobalPlayerBD*>()->Entries[self::id].OffRadarActive = true;
 			*scr_globals::freemode_properties.at(58).as<int*>() = NETWORK::GET_NETWORK_TIME() + 1;
 		}
@@ -22,7 +24,9 @@ namespace big
 		virtual void on_disable() override
 		{
 			if (!g.self.ghost_org)
-				MISC::CLEAR_BIT(scr_globals::freemode_global.at(4682).as<int*>(), 2);
+			{
+				MISC::CLEAR_BIT(scr_globals::freemode_global.at(4698).as<int*>(), 2);
+			}
 			scr_globals::globalplayer_bd.as<GlobalPlayerBD*>()->Entries[self::id].OffRadarActive = false;
 		}
 	};

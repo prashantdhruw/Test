@@ -3,7 +3,7 @@
 #include "gta_pointers_layout_info.hpp"
 #include "sc_pointers_layout_info.hpp"
 
-#define GTA_VERSION_TARGET "1.70-3407"
+#define GTA_VERSION_TARGET "1.70-3411"
 
 namespace big
 {

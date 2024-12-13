@@ -15,11 +15,15 @@ namespace big
 	void format_string(std::string_view player_name, std::string_view protection_type, bool should_log, bool should_notify)
 	{
 		if (should_log)
+		{
 			LOG(WARNING) << "BLOCKED_SCRIPT_EVENT From: " << player_name << " Event Type: " << protection_type;
+		}
 
 		if (should_notify)
+		{
 			g_notification_service.push_warning("Script Event Protection",
 			    std::format("From: {}\nEvent Type: {}", player_name.data(), protection_type.data()));
+		}
 	}
 
 	inline bool is_player_driver_of_local_vehicle(Player sender)
@@ -27,7 +31,9 @@ namespace big
 		auto plyr = g_player_service->get_by_id(sender);
 
 		if (!plyr || !plyr->get_current_vehicle() || !g_player_service->get_self()->get_current_vehicle())
+		{
 			return false;
+		}
 
 		return g_player_service->get_self()->get_current_vehicle()->m_driver == plyr->get_ped();
 	}
@@ -37,7 +43,9 @@ namespace big
 		auto& boss_goon = scr_globals::gpbd_fm_3.as<GPBD_FM_3*>()->Entries[self::id].BossGoon;
 
 		if (boss_goon.Boss != self::id)
+		{
 			return false;
+		}
 
 		for (int i = 0; i < boss_goon.Goons.Size; i++)
 		{
@@ -71,11 +79,15 @@ namespace big
 
 			script_event_args.reserve(args_count);
 			for (int i = 0; i < args_count; i++)
+			{
 				script_event_args.push_back(args[i]);
+			}
 
 			auto event_ret = g_lua_manager->trigger_event<menu_event::ScriptedGameEventReceived, bool>((int)player->m_player_id, script_event_args);
 			if (event_ret.has_value())
+			{
 				return true; // don't care, block event if any bool is returned
+			}
 		}
 
 		switch (hash)
@@ -212,7 +224,9 @@ namespace big
 		case eRemoteEvent::TSECommand:
 		{
 			if (NETWORK::NETWORK_IS_ACTIVITY_SESSION())
+			{
 				break;
+			}
 
 			if (g.protections.script_events.rotate_cam && static_cast<eRemoteEvent>(args[3]) == eRemoteEvent::TSECommandRotateCam)
 			{
@@ -225,7 +239,9 @@ namespace big
 				if (!plyr || plyr->m_play_sound_rate_limit_tse.process())
 				{
 					if (plyr->m_play_sound_rate_limit_tse.exceeded_last_process())
+					{
 						g.reactions.sound_spam.process(plyr);
+					}
 					return true;
 				}
 			}
@@ -249,7 +265,9 @@ namespace big
 		case eRemoteEvent::SendToLocation:
 		{
 			if (is_player_our_boss(plyr->id()))
+			{
 				break;
+			}
 
 			bool known_location = false;
 
@@ -289,7 +307,9 @@ namespace big
 			if (g.protections.script_events.sound_spam && (!plyr || plyr->m_invites_rate_limit.process()))
 			{
 				if (plyr->m_invites_rate_limit.exceeded_last_process())
+				{
 					g.reactions.sound_spam.process(plyr);
+				}
 				return true;
 			}
 			break;
@@ -375,25 +395,35 @@ namespace big
 		case eRemoteEvent::InteriorControl:
 		{
 			int interior = (int)args[3];
-			if (interior < 0 || interior > 171) // the upper bound will change after an update
+			if (interior < 0 || interior > 173) // the upper bound will change after an update
 			{
 				if (auto plyr = g_player_service->get_by_id(player->m_player_id))
+				{
 					session::add_infraction(plyr, Infraction::TRIED_KICK_PLAYER);
+				}
 				g.reactions.kick.process(plyr);
 				return true;
 			}
 
 			if (NETWORK::NETWORK_IS_ACTIVITY_SESSION())
+			{
 				break;
+			}
 
 			if (!g_local_player)
+			{
 				break;
+			}
 
 			if (is_player_our_boss(plyr->id()))
+			{
 				break;
+			}
 
 			if (is_player_driver_of_local_vehicle(plyr->id()))
+			{
 				break;
+			}
 
 			if (!plyr->get_ped() || math::distance_between_vectors(*plyr->get_ped()->get_position(), *g_local_player->get_position()) > 75.0f)
 			{
@@ -472,7 +502,9 @@ namespace big
 			for (int i = 0; i < args_count; i++)
 			{
 				if (i)
+				{
 					output << ", ";
+				}
 
 				output << (int)args[i];
 			}
@@ -490,7 +522,9 @@ namespace big
 		}
 
 		if (g.debug.logs.script_event.block_all) [[unlikely]]
+		{
 			return true;
+		}
 
 		return false;
 	}

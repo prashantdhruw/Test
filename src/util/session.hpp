@@ -8,13 +8,13 @@
 #include "pointers.hpp"
 #include "rage/rlSessionByGamerTaskResult.hpp"
 #include "script.hpp"
+#include "script_function.hpp"
 #include "services/api/api_service.hpp"
 #include "services/player_database/player_database_service.hpp"
 #include "services/players/player_service.hpp"
 #include "thread_pool.hpp"
 #include "util/globals.hpp"
 #include "util/misc.hpp"
-#include "script_function.hpp"
 
 #include <network/Network.hpp>
 #include <network/snConnectToPeerTask.hpp>
@@ -29,7 +29,9 @@ namespace big::session
 		*scr_globals::sctv_spectator.as<int*>() = (session == eSessionType::SC_TV ? 1 : 0); // If SCTV then enable spectator mode
 
 		if (session == eSessionType::LEAVE_ONLINE)
+		{
 			*scr_globals::session.at(2).as<int*>() = -1;
+		}
 		else
 		{
 			*scr_globals::session.at(2).as<int*>() = 0;
@@ -66,8 +68,8 @@ namespace big::session
 	{
 		int idx = index / 32;
 		int bit = index % 32;
+		misc::set_bit(scr_globals::gsbd_fm_events.at(11).at(389).at(idx, 1).as<int*>(), bit);
 		misc::set_bit(scr_globals::gsbd_fm_events.at(11).at(379).at(idx, 1).as<int*>(), bit);
-		misc::set_bit(scr_globals::gsbd_fm_events.at(11).at(370).at(idx, 1).as<int*>(), bit);
 		misc::set_bit((int*)&scr_globals::gpbd_fm_3.as<GPBD_FM_3*>()->Entries[self::id].BossGoon.ActiveFreemodeEvents[idx], bit);
 	}
 
@@ -75,8 +77,8 @@ namespace big::session
 	{
 		int idx = index / 32;
 		int bit = index % 32;
+		misc::clear_bit(scr_globals::gsbd_fm_events.at(11).at(389).at(idx, 1).as<int*>(), bit);
 		misc::clear_bit(scr_globals::gsbd_fm_events.at(11).at(379).at(idx, 1).as<int*>(), bit);
-		misc::clear_bit(scr_globals::gsbd_fm_events.at(11).at(370).at(idx, 1).as<int*>(), bit);
 		misc::clear_bit((int*)&scr_globals::gpbd_fm_3.as<GPBD_FM_3*>()->Entries[self::id].BossGoon.ActiveFreemodeEvents[idx], bit);
 	}
 
@@ -115,7 +117,9 @@ namespace big::session
 		if (g_pointers->m_gta.m_start_get_session_by_gamer_handle(0, &player_handle, 1, &result, 1, &success, &state))
 		{
 			while (state.status == 1)
+			{
 				script::get_current()->yield();
+			}
 
 			if (state.status == 3 && success)
 			{
@@ -149,7 +153,9 @@ namespace big::session
 		bool success = g_pointers->m_gta.m_invite_player_by_gamer_handle(*g_pointers->m_gta.m_network, &player_handle, 1, nullptr, nullptr, nullptr);
 
 		if (!success)
+		{
 			return g_notification_service.push_error("GUI_TAB_NETWORK"_T.data(), "RID_JOINER_INVITE_OFFLINE"_T.data());
+		}
 
 		g_notification_service.push_success("GUI_TAB_NETWORK"_T.data(), "SESSION_INVITE_SUCCESS"_T.data());
 	}
@@ -171,9 +177,13 @@ namespace big::session
 	inline void add_infraction(player_ptr player, Infraction infraction, const std::string& custom_reason = "")
 	{
 		if (g.debug.fuzzer.enabled)
+		{
 			return;
+		}
 		if ((player->is_friend() && g.session.trust_friends) || player->is_trusted || g.session.trust_session)
+		{
 			return;
+		}
 
 		auto plyr = g_player_database_service->get_or_create_player(player);
 		if (!plyr->infractions.contains((int)infraction))

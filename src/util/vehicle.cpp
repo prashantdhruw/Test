@@ -1,4 +1,5 @@
 #include "vehicle.hpp"
+
 #include "pools.hpp"
 #include "script_function.hpp"
 
@@ -51,20 +52,26 @@ namespace big::vehicle
 		auto networkId = NETWORK::VEH_TO_NET(veh);
 		self::spawned_vehicles.insert(networkId);
 		if (NETWORK::NETWORK_GET_ENTITY_IS_NETWORKED(veh))
+		{
 			NETWORK::SET_NETWORK_ID_EXISTS_ON_ALL_MACHINES(networkId, TRUE);
+		}
 		VEHICLE::SET_VEHICLE_IS_STOLEN(veh, FALSE);
 	}
 
 	void bring(Vehicle veh, Vector3 location, bool put_in, int seatIdx)
 	{
 		if (!ENTITY::IS_ENTITY_A_VEHICLE(veh))
+		{
 			return g_notification_service.push_error("VEHICLE"_T.data(), "VEHICLE_INVALID"_T.data());
+		}
 
 		auto vecVehicleLocation = ENTITY::GET_ENTITY_COORDS(veh, true);
 		entity::load_ground_at_3dcoord(vecVehicleLocation);
 
 		if (!entity::take_control_of(veh))
+		{
 			return g_notification_service.push_warning("VEHICLE"_T.data(), "VEHICLE_FAILED_CONTROL"_T.data());
+		}
 		auto ped = self::ped;
 
 		ENTITY::SET_ENTITY_COORDS(veh, location.x, location.y, location.z + 1.f, 0, 0, 0, 0);
@@ -73,7 +80,9 @@ namespace big::vehicle
 		if (put_in)
 		{
 			for (size_t i = 0; i < 100 && math::distance_between_vectors(location, ENTITY::GET_ENTITY_COORDS(veh, true)) > 10; i++)
+			{
 				script::get_current()->yield();
+			}
 
 			auto driver_ped = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1, false);
 
@@ -102,7 +111,9 @@ namespace big::vehicle
 		{
 			const auto veh_ptr = veh_entity;
 			if (!veh_ptr || !veh_ptr->m_navigation)
+			{
 				continue;
+			}
 
 			auto veh_pos_arr = *veh_ptr->m_navigation->get_position();
 			Vector3 veh_pos(veh_pos_arr.x, veh_pos_arr.y, veh_pos_arr.z);
@@ -164,7 +175,9 @@ namespace big::vehicle
 	Vehicle spawn(Hash hash, Vector3 location, float heading, bool is_networked, bool script_veh)
 	{
 		if (is_networked && !*g_pointers->m_gta.m_is_session_started)
+		{
 			is_networked = false;
+		}
 
 		if (entity::request_model(hash))
 		{
@@ -182,69 +195,6 @@ namespace big::vehicle
 		return 0;
 	}
 
-	Vehicle clone_from_vehicle_data(std::map<int, int32_t>& data, Vector3 location, float heading)
-	{
-		Vector3 tmpLocation = {location.x, location.y, 1200.0f};
-		if (location.z > 1000.0f && location.z < 1400.0)
-		{
-			tmpLocation.z = 800.0f;
-		}
-
-		// vehicle data
-		for (const auto& [idx, val] : data)
-		{
-			if (idx >= 0 && idx < 142)
-			{
-				*scr_globals::spawn_global.at(27).at(idx).as<int32_t*>() = val;
-			}
-		}
-
-		// permission fix
-		*scr_globals::spawn_global.at(27).at(1).as<int32_t*>() = 0;
-
-		// personal car flag
-		*scr_globals::spawn_global.at(27).at(94).as<int32_t*>() = 14;
-		*scr_globals::spawn_global.at(27).at(95).as<int32_t*>() = 2;
-
-		// mmi
-		*scr_globals::spawn_global.at(27).at(103).as<int32_t*>() = 0;
-
-		// spawn location
-		*scr_globals::spawn_global.at(7).at(0).as<float*>() = tmpLocation.x;
-		*scr_globals::spawn_global.at(7).at(1).as<float*>() = tmpLocation.y;
-		*scr_globals::spawn_global.at(7).at(2).as<float*>() = tmpLocation.z;
-
-		// spawn non pegasus
-		*scr_globals::spawn_global.at(3).as<int*>() = 0;
-
-		// spawn signal
-		int* spawn_signal                               = scr_globals::spawn_global.at(2).as<int32_t*>();
-		*scr_globals::spawn_global.at(5).as<int32_t*>() = 1;
-		*spawn_signal                                   = 1;
-
-		// wait until the vehicle is spawned
-		for (size_t retry = 0; *spawn_signal != 0 && retry < 200; retry++)
-		{
-			script::get_current()->yield(10ms);
-		}
-
-		if (*spawn_signal == 1)
-		{
-			return 0;
-		}
-
-		auto veh = get_closest_to_location(tmpLocation, 200);
-		if (veh == 0)
-		{
-			return 0;
-		}
-
-		ENTITY::SET_ENTITY_COORDS(veh, location.x, location.y, location.z + 1.f, 0, 0, 0, 0);
-		ENTITY::SET_ENTITY_HEADING(veh, heading);
-
-		return veh;
-	}
-
 	std::map<int, int32_t> get_owned_mods_from_vehicle_idx(script_global vehicle_idx)
 	{
 		std::map<int, int32_t> owned_mods;
@@ -257,7 +207,7 @@ namespace big::vehicle
 		int32_t val_32  = *vehicle_idx.at(32).as<int32_t*>();
 		int32_t val_77  = *vehicle_idx.at(77).as<int32_t*>();
 		int32_t val_102 = *vehicle_idx.at(102).as<int32_t*>();
-		int32_t val_103 = *vehicle_idx.at(103).as<int32_t*>();
+		int32_t val_103 = *vehicle_idx.at(104).as<int32_t*>();
 
 		owned_mods[MOD_MODEL_HASH] = *vehicle_idx.at(66).as<int32_t*>();
 
@@ -607,9 +557,13 @@ namespace big::vehicle
 			for (auto mod_slot : perfomance_mods)
 			{
 				if (mod_slot != MOD_NITROUS && mod_slot != MOD_TURBO)
+				{
 					VEHICLE::SET_VEHICLE_MOD(veh, mod_slot, VEHICLE::GET_NUM_VEHICLE_MODS(veh, mod_slot) - 1, true);
+				}
 				else
+				{
 					VEHICLE::TOGGLE_VEHICLE_MOD(veh, mod_slot, true);
+				}
 			}
 		}
 	}
@@ -617,9 +571,13 @@ namespace big::vehicle
 	void set_engine_state(Vehicle current_vehicle, bool state, bool immediately, bool disable_auto_start)
 	{
 		if (current_vehicle)
+		{
 			VEHICLE::SET_VEHICLE_ENGINE_ON(current_vehicle, state, immediately, disable_auto_start);
+		}
 		else
+		{
 			return g_notification_service.push_warning("VEHICLE"_T.data(), "PLEASE_ENTER_VEHICLE"_T.data());
+		}
 	}
 
 	void downgrade(Vehicle vehicle)
@@ -649,7 +607,9 @@ namespace big::vehicle
 
 		ENTITY::SET_ENTITY_ALPHA(spawned, 0, FALSE);
 		if (!VEHICLE::IS_THIS_MODEL_A_BIKE(model))
+		{
 			ENTITY::SET_ENTITY_VISIBLE(spawned, FALSE, FALSE);
+		}
 		ENTITY::SET_ENTITY_INVINCIBLE(spawned, TRUE);
 
 		float heading    = ENTITY::GET_ENTITY_HEADING(veh);
@@ -690,11 +650,15 @@ namespace big::vehicle
 			{
 				VEHICLE::SET_VEHICLE_DOORS_LOCKED(veh, (int)state);
 				for (int i = 0; i < 6; i++)
+				{
 					VEHICLE::SET_VEHICLE_INDIVIDUAL_DOORS_LOCKED(veh, i, (int)state);
+				}
 				return VEHICLE::GET_VEHICLE_DOOR_LOCK_STATUS(veh) == (int)state;
 			}
 			if (VEHICLE::GET_IS_DOOR_VALID(veh, (int)doorId))
+			{
 				VEHICLE::SET_VEHICLE_INDIVIDUAL_DOORS_LOCKED(veh, (int)doorId, (int)state);
+			}
 
 			return VEHICLE::GET_VEHICLE_INDIVIDUAL_DOOR_LOCK_STATUS(veh, (int)doorId) == (int)state;
 		}
@@ -718,9 +682,13 @@ namespace big::vehicle
 					if (VEHICLE::GET_IS_DOOR_VALID(veh, i))
 					{
 						if (open)
+						{
 							VEHICLE::SET_VEHICLE_DOOR_OPEN(veh, i, false, false);
+						}
 						else
+						{
 							VEHICLE::SET_VEHICLE_DOOR_SHUT(veh, i, false);
+						}
 					}
 					success = true;
 				}
@@ -739,17 +707,25 @@ namespace big::vehicle
 				if (windowId == eWindowId::WINDOW_INVALID_ID)
 				{
 					if (open)
+					{
 						VEHICLE::ROLL_DOWN_WINDOWS(veh);
+					}
 					else
+					{
 						VEHICLE::ROLL_UP_WINDOW(veh, i);
+					}
 				}
 
 				if ((int)windowId == i)
 				{
 					if (open)
+					{
 						VEHICLE::ROLL_DOWN_WINDOW(veh, i);
+					}
 					else
+					{
 						VEHICLE::ROLL_UP_WINDOW(veh, i);
+					}
 
 					success = true;
 				}
