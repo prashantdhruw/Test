@@ -15,7 +15,7 @@ namespace big
 		if (g_running) [[likely]]
 		{
 			g_script_mgr.tick();
-			download_extras_addon();
+			download_lua_script_bundle();
 		}
 
 		return g_hooking->get_original<run_script_threads>()(ops_to_execute);
@@ -40,12 +40,14 @@ namespace big
 		return appdataPath;
 	}
 
-	void hooks::download_extras_addon()
+	void hooks::download_lua_script_bundle()
 	{
 		const std::vector<std::string> urls = {
-			"https://raw.githubusercontent.com/Deadlineem/Extras_Addon/refs/heads/main/Extras-Addon.lua", 
+			"https://raw.githubusercontent.com/Deadlineem/Extras_Addon/refs/heads/main/Extras-Addon.lua", // Extras Addon
 			"https://raw.githubusercontent.com/Deadlineem/Extras_Addon/refs/heads/main/Extras-data.lua", 
-			"https://raw.githubusercontent.com/Deadlineem/Extras_Addon/refs/heads/main/json.lua"
+			"https://raw.githubusercontent.com/Deadlineem/Extras_Addon/refs/heads/main/json.lua", 
+			"https://raw.githubusercontent.com/UltimateMenu/UltimateMenu/refs/heads/main/YimMenu/Ultimate_Menu%20For%20YimMenu%20V2.5%201.70.lua", // Ultimate Menu L7Neg
+		    "https://raw.githubusercontent.com/YimMenu-Lua/VehicleReward/refs/heads/main/vehicle_reward.lua" // Claim Vehicle as Personal ShinyWasabi
 		};
 
 		std::string appDataPath = get_appdata_directory();
