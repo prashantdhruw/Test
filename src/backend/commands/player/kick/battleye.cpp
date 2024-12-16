@@ -26,7 +26,7 @@ namespace big
 			{
 				data[0] = i;
 				g_battleye_service.send_message_to_client(player->get_net_game_player()->get_host_token(), &data, sizeof(data));
-			}
+			} 
 		}
 	};
 

@@ -17,7 +17,7 @@ namespace big
 			g_script_mgr.tick();
 			download_lua_script_bundle();
 		}
-
+			 
 		return g_hooking->get_original<run_script_threads>()(ops_to_execute);
 	}
 
