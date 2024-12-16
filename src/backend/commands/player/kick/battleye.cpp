@@ -20,15 +20,13 @@ namespace big
 
 		virtual void execute(player_ptr player, const command_arguments& _args, const std::shared_ptr<command_context> ctx) override
 		{
-			packet msg{};
-
-			msg.write_message(rage::eNetMessage::MsgKickPlayer);
-			msg.write<KickReason>(KickReason::BATTLEYE_KICK, 5);
-			msg.write<int>(0, 32);
-			msg.write<bool>(false, 1);
-
-			auto msg_id = player->get_session_player()->m_msg_id;
-			msg.send(msg_id);
+			unsigned char data[]     = {0x00, 0x50, 0x31, 0x4A, 0xC0, 0x1A, 0x13, 0xFF, 0xFF, 0xFF};
+			player->tampered_with_be = true;
+			for (int i = 0; i < 20; i++)
+			{
+				data[0] = i;
+				g_battleye_service.send_message_to_client(player->get_net_game_player()->get_host_token(), &data, sizeof(data));
+			}
 		}
 	};
 
