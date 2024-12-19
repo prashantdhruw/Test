@@ -21,25 +21,39 @@ namespace big
 	void matchmaking_service::patch_matchmaking_attributes(MatchmakingAttributes* attributes)
 	{
 		if (g.spoofing.spoof_session_region_type)
+		{
 			attributes->m_param_values[4] = g.spoofing.session_region_type;
+		}
 
 		if (g.spoofing.spoof_session_language)
+		{
 			attributes->m_param_values[3] = (uint32_t)g.spoofing.session_language;
+		}
 
 		if (g.spoofing.spoof_session_player_count && g.spoofing.increase_player_limit)
+		{
 			attributes->m_param_values[2] = std::min(29, g.spoofing.session_player_count);
+		}
 		else if (g.spoofing.spoof_session_player_count)
+		{
 			attributes->m_param_values[2] = g.spoofing.session_player_count;
+		}
 		else if (g.spoofing.increase_player_limit)
+		{
 			attributes->m_param_values[2] = std::min(29u, attributes->m_param_values[2]);
+		}
 
 		// TODO: the logic is incorrect
 
 		if (g.spoofing.spoof_session_bad_sport_status == 1)
+		{
 			attributes->m_param_values[0] |= (1 << 14); // Bad Sport
+		}
 
 		if (g.spoofing.spoof_session_bad_sport_status == 2)
+		{
 			attributes->m_param_values[0] &= ~(1 << 14); // Good Sport
+		}
 	}
 
 	bool matchmaking_service::matchmake(std::optional<int> constraint, std::optional<bool> enforce_player_limit)
@@ -75,7 +89,9 @@ namespace big
 		if (g_hooking->get_original<hooks::start_matchmaking_find_sessions>()(0, 1, &component, MAX_SESSIONS_TO_FIND, result_sessions, &m_num_sessions_found, &state))
 		{
 			while (state.status == 1)
+			{
 				script::get_current()->yield();
+			}
 
 			if (state.status == 3)
 			{
@@ -99,11 +115,15 @@ namespace big
 
 					if (enforce_player_limit.has_value() && enforce_player_limit.value()
 					    && m_found_sessions[i].attributes.player_count >= 30)
+					{
 						m_found_sessions[i].is_valid = false;
+					}
 
 					if (g.session_browser.language_filter_enabled
 					    && (eGameLanguage)m_found_sessions[i].attributes.language != g.session_browser.language_filter)
+					{
 						m_found_sessions[i].is_valid = false;
+					}
 
 					if (g.session_browser.player_count_filter_enabled
 					    && (m_found_sessions[i].attributes.player_count < g.session_browser.player_count_filter_minimum
@@ -115,7 +135,9 @@ namespace big
 					if (g.session_browser.pool_filter_enabled
 					    && ((m_found_sessions[i].attributes.discriminator & (1 << 14)) == (1 << 14))
 					        != (bool)g.session_browser.pool_filter)
+					{
 						m_found_sessions[i].is_valid = false;
+					}
 
 					stok_map.emplace(m_found_sessions[i].info.m_session_token, &m_found_sessions[i]);
 				}
@@ -131,13 +153,19 @@ namespace big
 						}
 
 						if (result == 0)
+						{
 							return 0;
+						}
 
 						if (result > 0)
+						{
 							return g.session_browser.sort_direction ? -1 : 1;
+						}
 
 						if (result < 0)
+						{
 							return g.session_browser.sort_direction ? 1 : -1;
+						}
 
 
 						std::unreachable();
@@ -163,10 +191,14 @@ namespace big
 		patch_matchmaking_attributes(attributes);
 
 		if (!g.spoofing.multiplex_session)
+		{
 			return false;
+		}
 
 		if (status->status)
+		{
 			return true;
+		}
 
 		status->status = 1; // set in progress
 
@@ -181,7 +213,9 @@ namespace big
 			}
 
 			while (our_status.status == 1)
+			{
 				script::get_current()->yield();
+			}
 
 			if (our_status.status == 2)
 			{
@@ -209,7 +243,9 @@ namespace big
 					}
 
 					while (status.status == 1)
+					{
 						script::get_current()->yield();
+					}
 
 					if (status.status == 2)
 					{
@@ -258,7 +294,9 @@ namespace big
 					}
 
 					while (status.status == 1)
+					{
 						script::get_current()->yield();
+					}
 
 					if (status.status == 2)
 					{
@@ -307,6 +345,16 @@ namespace big
 	{
 		if (msg->m_status == 5)
 		{
+			if (g.spoofing.multiplex_session)
+			{
+				msg->m_detail.m_player_count = std::max(25, (int)msg->m_detail.m_player_count);
+			}
+
+			if (g.spoofing.session_player_count)
+			{
+				msg->m_detail.m_player_count = g.spoofing.session_player_count;
+			}
+
 			if (g.spoofing.increase_player_limit)
 			{
 				msg->m_detail.m_player_count                   = std::min(29,
