@@ -15,8 +15,8 @@ namespace big
 		}
 
 		components::sub_title("Header Image"_T);
-		static std::vector<std::string> header_names = {"Chronix (Purple)", "Chronix (Grey)", "Chronix (Rasta)", "Chronix (Red)"};
-		static std::vector<std::string> header_images = {"header1.png", "header2.png", "header3.png", "header4.png"};
+		static std::vector<std::string> header_names = {"Chronix (Purple)", "Chronix (Grey)", "Chronix (Rasta)", "Chronix (Red)", "Chronix (Blue)", "Chronix (Batman 1)", "Chronix(Batman 2)"};
+		static std::vector<std::string> header_images = {"header1.png", "header2.png", "header3.png", "header4.png", "header5.png", "header6.png", "header7.png"};
 		static int selected_header_index              = 0;
 
 		// Define a struct to hold the theme colors
@@ -31,10 +31,13 @@ namespace big
 		// Theme color definitions in ImU32 format (background, text, button, frame)
 		static std::vector<ThemeColors> theme_colors = {
 		    // Purple theme (default for header1.png)
-		    {3717464384, 4294967295, 2936061451, 2936012800}, // Purple: Default (background, text, button, frame)
-		    {3712889114, 4294967295, 2939960380, 4278190080}, // Grey: monochrome (background, text, button, frame)
-		    {3707780114, 4294967295, 2936013055, 4279526240}, // Rasta: dark green background, red buttons, yellow frame
-		    {3707764844, 4294967295, 2936061694, 4278190080} // Red: red/orange/black (background, text, button, frame)
+		    {3717464384, 4294967295, 2936061451, 2936012800},  // Purple: Default Purple/Green
+		    {3712889114, 4294967295, 2939960380, 4278190080},  // Grey: monochrome
+		    {3707780114, 4294967295, 2936013055, 4279526240},  // Rasta: Dark Green/Red/Yellow
+		    {3707764844, 4294967295, 2936061694, 4278190080},  // Red: Red/Orange/Black
+		    {3723006720, 4294967295, 2936061694, 4278190080},  // Blue: Blue/Gold
+		    {3707764736, 4294967295, 2939960380, 2944302718}, // Batman 1
+		    {3707764736, 4294967295, 2939960380, 2944302718}  // Batman 2
 		};
 
 
