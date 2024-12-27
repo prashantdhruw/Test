@@ -103,7 +103,7 @@ namespace big
 		extern ID3D11Device* g_device;
 		extern ID3D11DeviceContext* g_context;
 
-		std::string headerImageUrl = "http://bedrock.root.sx/images/" + g.window.selected_header_image;
+		std::string headerImageUrl = "https://bedrock.root.sx/images/" + g.window.selected_header_image;
 
 		if (!headerTextureLoaded || g.window.selected_header_image_changed)
 		{
