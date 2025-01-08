@@ -6,6 +6,7 @@
 #include "gta_util.hpp"
 #include "misc.hpp"
 #include "natives.hpp"
+#include "packet.hpp"
 #include "script.hpp"
 #include "script_local.hpp"
 #include "services/players/player_service.hpp"
@@ -40,22 +41,34 @@ namespace big::scripts
 	inline bool wait_till_loaded(int hash)
 	{
 		if (is_loaded(hash))
+		{
 			return true;
+		}
 		for (int i = 0; i < 150 && !is_loaded(hash); i++)
+		{
 			script::get_current()->yield(10ms);
+		}
 		if (is_loaded(hash))
+		{
 			return true;
+		}
 		return false;
 	}
 
 	inline bool wait_till_running(int hash)
 	{
 		if (is_running(hash))
+		{
 			return true;
+		}
 		for (int i = 0; i < 150 && !is_running(hash); i++)
+		{
 			script::get_current()->yield(10ms);
+		}
 		if (is_running(hash))
+		{
 			return true;
+		}
 		return false;
 	}
 
@@ -63,28 +76,45 @@ namespace big::scripts
 	{
 		if (auto launcher = gta_util::find_script_thread(hash); launcher && launcher->m_net_component)
 		{
-			for (int i = 0; !((CGameScriptHandlerNetComponent*)launcher->m_net_component)->is_local_player_host(); i++)
+			auto net_component = reinterpret_cast<CGameScriptHandlerNetComponent*>(launcher->m_net_component);
+
+			if (net_component->is_local_player_host())
 			{
-				if (i > 200)
-					return false;
-
-				((CGameScriptHandlerNetComponent*)launcher->m_net_component)
-				    ->send_host_migration_event(g_player_service->get_self()->get_net_game_player());
-				script::get_current()->yield(10ms);
-
-				if (!launcher->m_stack || !launcher->m_net_component)
-					return false;
+				return true;
 			}
+
+			net_component->do_host_migration(g_player_service->get_self()->get_net_game_player(), 0xFFFF, true);
+
+			packet pack;
+			pack.write_message(rage::eNetMessage::MsgScriptVerifyHostAck);
+			net_component->m_script_handler->get_id()->serialize(&pack.m_buffer);
+			pack.write<bool>(true, 1);
+			pack.write<bool>(true, 1);
+			pack.write<std::uint16_t>(0xFFFF, 16);
+
+			for (auto& player : g_player_service->players())
+			{
+				if (player.second->get_net_game_player())
+				{
+					pack.send(player.second->get_net_game_player()->m_msg_id);
+				}
+			}
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	inline int launcher_index_from_hash(rage::joaat_t script_hash)
 	{
 		for (int i = 0; i < launcher_scripts.size(); i++)
+		{
 			if (launcher_scripts[i] == script_hash)
+			{
 				return i;
+			}
+		}
 
 		return -1;
 	}
@@ -99,13 +129,15 @@ namespace big::scripts
 			bool set = false;
 
 			if (!launcher->m_net_component)
+			{
 				return false;
+			}
 
 			for (auto& [_, plyr] : g_player_service->players())
 			{
 				if (((CGameScriptHandlerNetComponent*)launcher->m_net_component)->is_player_a_participant(plyr->get_net_game_player()))
 				{
-					if (*script_local(launcher->m_stack, 238).at(plyr->id(), 3).at(2).as<int*>() == state)
+					if (*script_local(launcher->m_stack, 240).at(plyr->id(), 3).at(2).as<int*>() == state)
 					{
 						set = true;
 						break;
@@ -135,7 +167,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 5); i++)
 				{
 					if (i > 200)
+					{
 						break; // 3F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(3).at(1).as<int*>() = 0;
 					*scr_globals::launcher_global.at(2).as<int*>()       = 6;
@@ -149,7 +183,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 6); i++)
 				{
 					if (i > 200)
+					{
 						break; // 4F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(3).at(1).as<int*>() = 0;
 					*scr_globals::launcher_global.at(2).as<int*>()       = 7;
@@ -163,7 +199,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 7); i++)
 				{
 					if (i > 200)
+					{
 						break; // 5F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(2).as<int*>() = 0;
 					script::get_current()->yield(10ms);
@@ -173,7 +211,7 @@ namespace big::scripts
 			// 6) Actually get the script to start
 			misc::set_bit(scr_globals::launcher_global.at(1).as<int*>(), 1); // run immediately
 			*scr_globals::launcher_global.at(2).as<int*>() = 6; // will change to 7 shortly but that's fine as players are guaranteed not to be in the waiting stage
-			*script_local(launcher->m_stack, 238).at(self::id, 3).at(2).as<int*>() = 6;
+			*script_local(launcher->m_stack, 240).at(self::id, 3).at(2).as<int*>() = 6;
 			*scr_globals::launcher_global.at(3).at(1).as<int*>()                   = script_id;
 
 			launcher->m_context.m_state = rage::eThreadState::running;
@@ -216,9 +254,15 @@ namespace big::scripts
 		for (uint32_t i = 0; i < (code_size - pattern.m_bytes.size()); i++)
 		{
 			for (uint32_t j = 0; j < pattern.m_bytes.size(); j++)
+			{
 				if (pattern.m_bytes[j].has_value())
+				{
 					if (pattern.m_bytes[j].value() != *program->get_code_address(i + j))
+					{
 						goto incorrect;
+					}
+				}
+			}
 
 			return i;
 		incorrect:
@@ -233,7 +277,9 @@ namespace big::scripts
 	{
 		uint8_t* bytearray = patch.data();
 		if (location)
+		{
 			memcpy(program->get_code_address(location.value() + offset), bytearray, patch.size());
+		}
 	}
 
 	inline void start_creator_script(rage::joaat_t hash)
