@@ -176,7 +176,7 @@ namespace big::mobile
 			{
 				*scr_globals::freemode_global.at(968).as<int*>() = 1; // disable vehicle node distance check
 			}
-			*scr_globals::freemode_global.at(954).as<int*>()  = 1; // tell freemode to spawn our vehicle
+			*scr_globals::freemode_global.at(954).as<int*>() = 1; // tell freemode to spawn our vehicle
 			*scr_globals::freemode_global.at(1019).as<int*>() = 0; // required
 			*scr_globals::freemode_global.at(1016).as<int*>() = veh_idx;
 

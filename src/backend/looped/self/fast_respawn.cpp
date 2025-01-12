@@ -20,8 +20,7 @@ namespace big
 		virtual void on_disable() override
 		{
 			*scr_globals::disable_wasted_sound.as<bool*>() = false;
-
-			misc::clear_bit(&(*scr_globals::freemode_properties.at(1761).at(756).as<int*>()), 1);
+			misc::clear_bit(&(*scr_globals::freemode_properties.at(1761).at(756).as<int*>()), 1); 
 		}
 	};
 

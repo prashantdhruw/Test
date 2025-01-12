@@ -28,9 +28,8 @@ namespace big::scr_globals
 
 	static inline const script_global freemode_properties(2672939);
 	static inline const script_global freemode_global(2739811);
-
+	
 	static inline const script_global spawn_global(2696456);
-
 	static inline const script_global transaction_overlimit(4538089);
 
 	static inline const script_global stats(2359296);
