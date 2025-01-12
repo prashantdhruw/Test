@@ -4,6 +4,7 @@
 
 namespace big
 {
+	extern ID3D11Device* g_device;
 	using dx_callback      = std::function<void()>;
 	using wndproc_callback = std::function<void(HWND, UINT, WPARAM, LPARAM)>;
 

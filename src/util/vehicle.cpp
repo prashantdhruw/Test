@@ -1,4 +1,5 @@
 #include "vehicle.hpp"
+
 #include "pools.hpp"
 #include "script_function.hpp"
 
@@ -51,20 +52,26 @@ namespace big::vehicle
 		auto networkId = NETWORK::VEH_TO_NET(veh);
 		self::spawned_vehicles.insert(networkId);
 		if (NETWORK::NETWORK_GET_ENTITY_IS_NETWORKED(veh))
+		{
 			NETWORK::SET_NETWORK_ID_EXISTS_ON_ALL_MACHINES(networkId, TRUE);
+		}
 		VEHICLE::SET_VEHICLE_IS_STOLEN(veh, FALSE);
 	}
 
 	void bring(Vehicle veh, Vector3 location, bool put_in, int seatIdx)
 	{
 		if (!ENTITY::IS_ENTITY_A_VEHICLE(veh))
+		{
 			return g_notification_service.push_error("VEHICLE"_T.data(), "VEHICLE_INVALID"_T.data());
+		}
 
 		auto vecVehicleLocation = ENTITY::GET_ENTITY_COORDS(veh, true);
 		entity::load_ground_at_3dcoord(vecVehicleLocation);
 
 		if (!entity::take_control_of(veh))
+		{
 			return g_notification_service.push_warning("VEHICLE"_T.data(), "VEHICLE_FAILED_CONTROL"_T.data());
+		}
 		auto ped = self::ped;
 
 		ENTITY::SET_ENTITY_COORDS(veh, location.x, location.y, location.z + 1.f, 0, 0, 0, 0);
@@ -73,7 +80,9 @@ namespace big::vehicle
 		if (put_in)
 		{
 			for (size_t i = 0; i < 100 && math::distance_between_vectors(location, ENTITY::GET_ENTITY_COORDS(veh, true)) > 10; i++)
+			{
 				script::get_current()->yield();
+			}
 
 			auto driver_ped = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1, false);
 
@@ -102,7 +111,9 @@ namespace big::vehicle
 		{
 			const auto veh_ptr = veh_entity;
 			if (!veh_ptr || !veh_ptr->m_navigation)
+			{
 				continue;
+			}
 
 			auto veh_pos_arr = *veh_ptr->m_navigation->get_position();
 			Vector3 veh_pos(veh_pos_arr.x, veh_pos_arr.y, veh_pos_arr.z);
@@ -164,7 +175,9 @@ namespace big::vehicle
 	Vehicle spawn(Hash hash, Vector3 location, float heading, bool is_networked, bool script_veh)
 	{
 		if (is_networked && !*g_pointers->m_gta.m_is_session_started)
+		{
 			is_networked = false;
+		}
 
 		if (entity::request_model(hash))
 		{
@@ -544,9 +557,13 @@ namespace big::vehicle
 			for (auto mod_slot : perfomance_mods)
 			{
 				if (mod_slot != MOD_NITROUS && mod_slot != MOD_TURBO)
+				{
 					VEHICLE::SET_VEHICLE_MOD(veh, mod_slot, VEHICLE::GET_NUM_VEHICLE_MODS(veh, mod_slot) - 1, true);
+				}
 				else
+				{
 					VEHICLE::TOGGLE_VEHICLE_MOD(veh, mod_slot, true);
+				}
 			}
 		}
 	}
@@ -554,9 +571,13 @@ namespace big::vehicle
 	void set_engine_state(Vehicle current_vehicle, bool state, bool immediately, bool disable_auto_start)
 	{
 		if (current_vehicle)
+		{
 			VEHICLE::SET_VEHICLE_ENGINE_ON(current_vehicle, state, immediately, disable_auto_start);
+		}
 		else
+		{
 			return g_notification_service.push_warning("VEHICLE"_T.data(), "PLEASE_ENTER_VEHICLE"_T.data());
+		}
 	}
 
 	void downgrade(Vehicle vehicle)
@@ -586,7 +607,9 @@ namespace big::vehicle
 
 		ENTITY::SET_ENTITY_ALPHA(spawned, 0, FALSE);
 		if (!VEHICLE::IS_THIS_MODEL_A_BIKE(model))
+		{
 			ENTITY::SET_ENTITY_VISIBLE(spawned, FALSE, FALSE);
+		}
 		ENTITY::SET_ENTITY_INVINCIBLE(spawned, TRUE);
 
 		float heading    = ENTITY::GET_ENTITY_HEADING(veh);
@@ -627,11 +650,15 @@ namespace big::vehicle
 			{
 				VEHICLE::SET_VEHICLE_DOORS_LOCKED(veh, (int)state);
 				for (int i = 0; i < 6; i++)
+				{
 					VEHICLE::SET_VEHICLE_INDIVIDUAL_DOORS_LOCKED(veh, i, (int)state);
+				}
 				return VEHICLE::GET_VEHICLE_DOOR_LOCK_STATUS(veh) == (int)state;
 			}
 			if (VEHICLE::GET_IS_DOOR_VALID(veh, (int)doorId))
+			{
 				VEHICLE::SET_VEHICLE_INDIVIDUAL_DOORS_LOCKED(veh, (int)doorId, (int)state);
+			}
 
 			return VEHICLE::GET_VEHICLE_INDIVIDUAL_DOOR_LOCK_STATUS(veh, (int)doorId) == (int)state;
 		}
@@ -655,9 +682,13 @@ namespace big::vehicle
 					if (VEHICLE::GET_IS_DOOR_VALID(veh, i))
 					{
 						if (open)
+						{
 							VEHICLE::SET_VEHICLE_DOOR_OPEN(veh, i, false, false);
+						}
 						else
+						{
 							VEHICLE::SET_VEHICLE_DOOR_SHUT(veh, i, false);
+						}
 					}
 					success = true;
 				}
@@ -676,17 +707,25 @@ namespace big::vehicle
 				if (windowId == eWindowId::WINDOW_INVALID_ID)
 				{
 					if (open)
+					{
 						VEHICLE::ROLL_DOWN_WINDOWS(veh);
+					}
 					else
+					{
 						VEHICLE::ROLL_UP_WINDOW(veh, i);
+					}
 				}
 
 				if ((int)windowId == i)
 				{
 					if (open)
+					{
 						VEHICLE::ROLL_DOWN_WINDOW(veh, i);
+					}
 					else
+					{
 						VEHICLE::ROLL_UP_WINDOW(veh, i);
+					}
 
 					success = true;
 				}

@@ -17,6 +17,7 @@ namespace big
 
 	public:
 		static bool nav_button(const std::string_view);
+		static bool header_button(const std::string_view text, float xPos = 0.0f, float yPos = 0.0f, const std::string tooltip = "", float width = -1.f, float height = -1.f);
 		static void icon(const std::string_view);
 		static void small_text(const std::string_view);
 		static void sub_title(const std::string_view);
@@ -152,8 +153,8 @@ namespace big
 		template<ImVec4 green = ImVec4(0.0f, 1.0f, 0.0f, 1.0f), ImVec4 red = ImVec4(1.0f, 0.0f, 0.0f, 1.0f)>
 		static void overlay_indicator(const std::string_view text, bool value)
 		{
-			ImGui::Text(std::format("{}: ", text).data());
-			ImGui::SameLine(180);
+			ImGui::TextWrapped(std::format("{}: ", text).data());
+			ImGui::SameLine();
 			ImGui::TextColored(value ? green : red, value ? "ENABLED"_T.data() : "CORE_GUI_COMPONENTS_DISABLED"_T.data());
 		}
 

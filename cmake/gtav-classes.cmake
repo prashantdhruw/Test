@@ -11,4 +11,4 @@ FetchContent_Declare(
 message("GTAV-Classes")
 if(NOT gtav_classes_POPULATED)
     FetchContent_Populate(gtav_classes)
-endif()
+endif()  

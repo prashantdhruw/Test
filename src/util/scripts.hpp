@@ -41,22 +41,34 @@ namespace big::scripts
 	inline bool wait_till_loaded(int hash)
 	{
 		if (is_loaded(hash))
+		{
 			return true;
+		}
 		for (int i = 0; i < 150 && !is_loaded(hash); i++)
+		{
 			script::get_current()->yield(10ms);
+		}
 		if (is_loaded(hash))
+		{
 			return true;
+		}
 		return false;
 	}
 
 	inline bool wait_till_running(int hash)
 	{
 		if (is_running(hash))
+		{
 			return true;
+		}
 		for (int i = 0; i < 150 && !is_running(hash); i++)
+		{
 			script::get_current()->yield(10ms);
+		}
 		if (is_running(hash))
+		{
 			return true;
+		}
 		return false;
 	}
 
@@ -97,8 +109,12 @@ namespace big::scripts
 	inline int launcher_index_from_hash(rage::joaat_t script_hash)
 	{
 		for (int i = 0; i < launcher_scripts.size(); i++)
+		{
 			if (launcher_scripts[i] == script_hash)
+			{
 				return i;
+			}
+		}
 
 		return -1;
 	}
@@ -113,7 +129,9 @@ namespace big::scripts
 			bool set = false;
 
 			if (!launcher->m_net_component)
+			{
 				return false;
+			}
 
 			for (auto& [_, plyr] : g_player_service->players())
 			{
@@ -149,7 +167,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 5); i++)
 				{
 					if (i > 200)
+					{
 						break; // 3F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(3).at(1).as<int*>() = 0;
 					*scr_globals::launcher_global.at(2).as<int*>()       = 6;
@@ -163,7 +183,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 6); i++)
 				{
 					if (i > 200)
+					{
 						break; // 4F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(3).at(1).as<int*>() = 0;
 					*scr_globals::launcher_global.at(2).as<int*>()       = 7;
@@ -177,7 +199,9 @@ namespace big::scripts
 				for (int i = 0; check_players_in_state(launcher, 7); i++)
 				{
 					if (i > 200)
+					{
 						break; // 5F) Timeout
+					}
 
 					*scr_globals::launcher_global.at(2).as<int*>() = 0;
 					script::get_current()->yield(10ms);
@@ -230,9 +254,15 @@ namespace big::scripts
 		for (uint32_t i = 0; i < (code_size - pattern.m_bytes.size()); i++)
 		{
 			for (uint32_t j = 0; j < pattern.m_bytes.size(); j++)
+			{
 				if (pattern.m_bytes[j].has_value())
+				{
 					if (pattern.m_bytes[j].value() != *program->get_code_address(i + j))
+					{
 						goto incorrect;
+					}
+				}
+			}
 
 			return i;
 		incorrect:
@@ -247,7 +277,9 @@ namespace big::scripts
 	{
 		uint8_t* bytearray = patch.data();
 		if (location)
+		{
 			memcpy(program->get_code_address(location.value() + offset), bytearray, patch.size());
+		}
 	}
 
 	inline void start_creator_script(rage::joaat_t hash)

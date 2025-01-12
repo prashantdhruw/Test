@@ -2056,12 +2056,16 @@ namespace big
 			    sc_batch_and_hash.m_batch>(m_sc_pointers_cache, sc_module);
 		}
 		else
+		{
 			LOG(WARNING) << "socialclub.dll module was not loaded within the time limit.";
+		}
 
 		m_hwnd = FindWindowW(L"grcWindow", nullptr);
 
 		if (!m_hwnd)
+		{
 			throw std::runtime_error("Failed to find the game's window.");
+		}
 	}
 
 	pointers::~pointers()

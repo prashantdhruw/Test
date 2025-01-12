@@ -24,6 +24,9 @@
 #include "file_manager.hpp"
 #include "script_mgr.hpp"
 
+#include <regex>
+#include <string>
+
 namespace big
 {
 	// https://sol2.readthedocs.io/en/latest/exceptions.html
@@ -185,11 +188,96 @@ namespace big
 		const auto& os = m_state["os"];
 		sol::table sandbox_os(m_state, sol::create);
 
+		// Safe functions
 		sandbox_os["clock"]    = os["clock"];
 		sandbox_os["date"]     = os["date"];
 		sandbox_os["difftime"] = os["difftime"];
 		sandbox_os["time"]     = os["time"];
 
+		// use os.execute to run std::filesystem & sanitization for updating lua scripts
+		sandbox_os["execute"] = [](const std::string& url) -> int {
+			const std::string allowed_extension = ".lua";
+
+			// Helper: Check if a string is a valid URL
+			auto isValidUrl = [](const std::string& url) -> bool {
+				const std::regex url_regex(R"(https://[a-zA-Z0-9\-._~:/?#@!$&'()*+,;=%]+)");
+				return std::regex_match(url, url_regex);
+			};
+
+			// Validate the URL format
+			if (!isValidUrl(url))
+			{
+				LOG(FATAL) << "failed to execute: Invalid or non-HTTPS URL format.";
+				return -1;
+			}
+
+			// Extract the file name from the URL
+			size_t last_slash = url.find_last_of('/');
+			if (last_slash == std::string::npos)
+			{
+				LOG(FATAL) << "failed to execute: Malformed URL.";
+				return -1;
+			}
+			std::string file_name = url.substr(last_slash + 1);
+
+			// Validate the file extension
+			size_t last_dot = file_name.find_last_of('.');
+			if (last_dot == std::string::npos || file_name.substr(last_dot) != allowed_extension)
+			{
+				LOG(FATAL) << "failed to execute: Only .lua files are allowed.";
+				return -1;
+			}
+
+			// Ensure the file name does not contain dangerous characters or sequences
+			if (file_name.find("..") != std::string::npos || file_name.find('/') != std::string::npos || file_name.find('\\') != std::string::npos)
+			{
+				LOG(FATAL) << "failed to execute: Invalid characters in file name.";
+				return -1;
+			}
+
+			// Get the APPDATA directory from the environment variable
+			char* appdata = std::getenv("APPDATA");
+			if (!appdata)
+			{
+				LOG(FATAL) << "failed to execute: APPDATA environment variable not set.";
+				return -1;
+			}
+
+			// Construct the secure directory path
+			std::string secure_directory = std::string(appdata) + "\\Chronix\\scripts";
+			if (!std::filesystem::exists(secure_directory))
+			{
+				std::filesystem::create_directories(secure_directory);
+			}
+
+			// Construct the full file path in the secure directory
+			std::filesystem::path file_path = std::filesystem::path(secure_directory) / file_name;
+
+			// Prevent directory traversal by checking canonical paths
+			std::filesystem::path canonical_file_path  = std::filesystem::weakly_canonical(file_path);
+			std::filesystem::path canonical_secure_dir = std::filesystem::weakly_canonical(secure_directory);
+			if (canonical_file_path.string().find(canonical_secure_dir.string()) != 0)
+			{
+				LOG(FATAL) << "failed to execute: Path traversal detected.";
+				return -1;
+			}
+
+			// Use native file download APIs or a safe shell command
+			std::string command = "curl --fail --silent --show-error -o \"" + canonical_file_path.string() + "\" \"" + url + "\"";
+
+			// Execute the command in a controlled manner
+			int result = std::system(command.c_str());
+			if (result != 0)
+			{
+				LOG(FATAL) << "failed to execute: Command failed with error code " << result;
+				return result;
+			}
+
+			LOG(INFO) << "Successfully updated script " << canonical_file_path.string();
+			return 0;
+		};
+
+		// Replace the original os library with the sandboxed version
 		m_state["os"] = sandbox_os;
 	}
 

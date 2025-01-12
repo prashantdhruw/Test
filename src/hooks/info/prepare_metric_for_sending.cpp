@@ -115,7 +115,7 @@ namespace big
 				std::string encoded_module_name = hex_encode(std::filesystem::path(module_name).filename().string());
 				std::string result              = remove_module_from_mmlist(data, encoded_module_name + "00");
 				if (result.size() != data.size())
-					LOG(INFO) << "Removed YimMenu DLL from MM metric";
+					LOG(INFO) << "Removed Chronix DLL from MM metric";
 				strncpy(reinterpret_cast<char*>(metric) + 0x18, result.c_str(), 0x900);
 				return g_hooking->get_original<prepare_metric_for_sending>()(serializer, unk, time, metric);
 			}

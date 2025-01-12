@@ -1,6 +1,6 @@
 #include "backend/looped_command.hpp"
-#include "util/misc.hpp"
 #include "core/scr_globals.hpp"
+#include "util/misc.hpp"
 
 namespace big
 {
@@ -20,7 +20,6 @@ namespace big
 		virtual void on_disable() override
 		{
 			*scr_globals::disable_wasted_sound.as<bool*>() = false;
-
 			misc::clear_bit(&(*scr_globals::freemode_properties.at(1761).at(756).as<int*>()), 1); 
 		}
 	};

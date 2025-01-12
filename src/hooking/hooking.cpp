@@ -82,9 +82,9 @@ namespace big
 		detour_hook_helper::add<hooks::serialize_join_request_message>("SJRM", g_pointers->m_gta.m_serialize_join_request_message);
 		detour_hook_helper::add<hooks::serialize_join_request_message_2>("SJRM2", g_pointers->m_gta.m_serialize_join_request_message_2);
 
-		#if 0
+#if 0
 		detour_hook_helper::add<hooks::start_matchmaking_find_sessions>("SMFS", g_pointers->m_gta.m_start_matchmaking_find_sessions);
-		#endif
+#endif
 
 		detour_hook_helper::add<hooks::broadcast_net_array>("BNA", g_pointers->m_gta.m_broadcast_net_array);
 
@@ -137,7 +137,7 @@ namespace big
 		detour_hook_helper::add<hooks::can_create_vehicle>("CCV", g_pointers->m_gta.m_can_create_vehicle);
 
 		detour_hook_helper::add<hooks::aimbot_cam_gameplay_director_update>("CGDU", g_pointers->m_gta.m_cam_gameplay_director_update);
-        
+
 		detour_hook_helper::add<hooks::format_int>("FI", g_pointers->m_gta.m_format_int);
 
 		detour_hook_helper::add<hooks::searchlight_crash>("SLC", g_pointers->m_gta.m_searchlight_crash);
@@ -146,7 +146,7 @@ namespace big
 		detour_hook_helper::add<hooks::update_session_advertisement>("USA", g_pointers->m_gta.m_update_session_advertisement);
 		detour_hook_helper::add<hooks::unadvertise_session>("US", g_pointers->m_gta.m_unadvertise_session);
 		detour_hook_helper::add<hooks::send_session_detail_msg>("SSDM", g_pointers->m_gta.m_send_session_detail_msg);
-  
+
 		detour_hook_helper::add<hooks::write_node_data>("WND", g_pointers->m_gta.m_write_node_data);
 		detour_hook_helper::add<hooks::can_send_node_to_player>("CSNTP", g_pointers->m_gta.m_can_send_node_to_player);
 		detour_hook_helper::add<hooks::write_node>("WN", g_pointers->m_gta.m_write_node);

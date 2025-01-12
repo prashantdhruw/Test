@@ -4,13 +4,13 @@ namespace big
 {
 	class battleye_service
 	{
-		using log_func_t      = void (*)(const char* msg, int level);
-		using kick_player_t   = void (*)(std::uint64_t id, const char* reason);
-		using send_message_t  = void (*)(std::uint64_t id, const void* msg, int size);
-		using add_player_t    = void (*)(std::uint64_t id, u_long ip_addr, u_short port, const char* name, char unused);
+		using log_func_t     = void (*)(const char* msg, int level);
+		using kick_player_t  = void (*)(std::uint64_t id, const char* reason);
+		using send_message_t = void (*)(std::uint64_t id, const void* msg, int size);
+		using add_player_t   = void (*)(std::uint64_t id, u_long ip_addr, u_short port, const char* name, char unused);
 		using set_player_state_t = void (*)(std::uint64_t id, int reason);
-		using assign_guid_t = void (*)(std::uint64_t id, const void* guid, int size); // binary
-		using receive_message_t = void (*)(std::uint64_t id, const void* packet, int size);
+		using assign_guid_t      = void (*)(std::uint64_t id, const void* guid, int size); // binary
+		using receive_message_t  = void (*)(std::uint64_t id, const void* packet, int size);
 
 		using shutdown_t    = void (*)();
 		using run_t         = bool (*)();
@@ -51,6 +51,7 @@ namespace big
 		std::mutex m_mutex{};
 
 		bool is_running();
+
 	public:
 		battleye_service();
 		~battleye_service();

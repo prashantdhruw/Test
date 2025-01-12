@@ -98,7 +98,7 @@ namespace big
 		add_native_detour(NativeIndex::UNREGISTER_SCRIPT_VARIABLE, all_scripts::DO_NOTHING);
 		add_native_detour(NativeIndex::FORCE_CHECK_SCRIPT_VARIABLES, all_scripts::DO_NOTHING);
 		add_native_detour(NativeIndex::NETWORK_CONCEAL_PLAYER, all_scripts::NETWORK_CONCEAL_PLAYER);
-		add_native_detour(NativeIndex::_GET_BATTLEYE_INIT_STATE, all_scripts::RETURN_FALSE); 
+		add_native_detour(NativeIndex::_GET_BATTLEYE_INIT_STATE, all_scripts::RETURN_FALSE);
 
 		add_native_detour("shop_controller"_J, NativeIndex::IS_PED_SHOOTING, all_scripts::RETURN_FALSE); // prevent exploit reports
 		add_native_detour("shop_controller"_J, NativeIndex::SET_WARNING_MESSAGE_WITH_HEADER, shop_controller::SET_WARNING_MESSAGE_WITH_HEADER);
@@ -168,8 +168,12 @@ namespace big
 		add_native_detour("vinewood_premium_garage_carmod"_J, NativeIndex::FORCE_PED_AI_AND_ANIMATION_UPDATE, all_scripts::DO_NOTHING); //Fix jittering weapons.
 
 		for (auto& entry : *g_pointers->m_gta.m_script_program_table)
+		{
 			if (entry.m_program)
+			{
 				hook_program(entry.m_program);
+			}
+		}
 
 		g_native_hooks = this;
 	}
@@ -203,13 +207,21 @@ namespace big
 
 		// Functions that need to be detoured for all scripts
 		if (const auto& pair = m_native_registrations.find(ALL_SCRIPT_HASH); pair != m_native_registrations.end())
+		{
 			for (const auto& native_hook_reg : pair->second)
+			{
 				native_replacements.insert(native_hook_reg);
+			}
+		}
 
 		// Functions that only need to be detoured for a specific script
 		if (const auto& pair = m_native_registrations.find(script_hash); pair != m_native_registrations.end())
+		{
 			for (const auto& native_hook_reg : pair->second)
+			{
 				native_replacements.insert(native_hook_reg);
+			}
+		}
 
 		if (!native_replacements.empty())
 		{

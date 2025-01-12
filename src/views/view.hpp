@@ -9,7 +9,10 @@ constexpr auto listbox_height = 0.2f;
 
 namespace big
 {
-
+	extern ID3D11Device* g_device;
+	extern ID3D11DeviceContext* g_deviceContext;
+	extern char custom_respawn_text[128];
+	extern char custom_off_radar_text[128];
 	inline ImVec2 get_listbox_dimensions()
 	{
 		return {750 * listbox_width, 1000 * listbox_height};
@@ -22,6 +25,7 @@ namespace big
 	public:
 		static void active_view();
 		static void esp_settings();
+		static void game_settings();
 		static void outfit_editor();
 		static void outfit_slots();
 		static void stat_editor();

@@ -1,5 +1,7 @@
 #pragma once
 #include "imgui.h"
+#include <stb_image.h>
+#include <d3d11.h>
 
 namespace lua::imgui
 {
@@ -599,8 +601,13 @@ namespace lua::imgui
 	{
 		return ImGui::ArrowButton(stringID.c_str(), static_cast<ImGuiDir>(dir));
 	}
-	inline void Image()
-	{ /* TODO: Image(...) ==> UNSUPPORTED */
+	inline void Image(ID3D11ShaderResourceView* texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0))
+	{
+		// Cast the DirectX shader resource view pointer to ImTextureID
+		ImTextureID texID = (ImTextureID)texture;
+
+		// Use ImGui's built-in Image function
+		ImGui::Image(texID, size, uv0, uv1, tint_col, border_col);
 	}
 	inline void ImageButton()
 	{ /* TODO: ImageButton(...) ==> UNSUPPORTED */

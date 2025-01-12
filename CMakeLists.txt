@@ -36,6 +36,7 @@ file(GLOB_RECURSE SRC_MAIN
     "${SRC_DIR}/**.cc"
     "${SRC_DIR}/**.cxx"
     "${SRC_DIR}/**.asm"
+    "${SRC_DIR}/**.c"
 )
 
 if (MSVC)
@@ -50,9 +51,11 @@ add_library(YimMenu MODULE "${SRC_MAIN}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(TARGET YimMenu PROPERTY CXX_STANDARD 23) # 23 Because std::format is not avalible in std:c++20 for some reason. Maybe it's because i use v142 toolset.
+set_target_properties(YimMenu PROPERTIES OUTPUT_NAME "Chronix")
 
 source_group(TREE ${SRC_DIR} PREFIX "src" FILES ${SRC_MAIN} )
 
+# Include GLEW headers
 target_include_directories(YimMenu PRIVATE 
     "${SRC_DIR}"
     "${json_SOURCE_DIR}/single_include"

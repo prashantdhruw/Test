@@ -155,9 +155,12 @@ namespace big
 	{
 		switch (property)
 		{
-			case 12: //Hangar
+		case 12: //Hangar
+		{
+			auto hangar_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(299).as<PINT>();
+			switch (hangar_id)
 			{
-			    auto hangar_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(299).as<PINT>();
+			  auto hangar_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(299).as<PINT>();
 				switch (hangar_id)
 				{
 					case 1: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_HANGAR_1"); //LSIA Hangar 1
@@ -168,9 +171,14 @@ namespace big
 				}
 				break;
 			}
-			case 13: //Facility
+			break;
+		}
+		case 13: //Facility
+		{
+			auto facility_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(306).as<PINT>();
+			switch (facility_id)
 			{
-			    auto facility_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(306).as<PINT>();
+			  auto facility_id = *scr_globals::gpbd_fm_1.at(self::id, 889).at(268).at(306).as<PINT>();
 				switch (facility_id)
 				{
 					case 1: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_DBASE_1"); //Grand Senora Desert Facility
@@ -185,28 +193,29 @@ namespace big
 				}
 				break;
 			}
-			case 14: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_CLUBG"); //Nightclub Service Entrance
-			case 15: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR1"); //Nightclub B2
-			case 16: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR2"); //Nightclub B3
-			case 17: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR3"); //Nightclub B4
-			case 18: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F0"); //Arena Workshop
-			case 19: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F1"); //Arena Workshop B1
-			case 20: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F2"); //Arena Workshop B2
-			case 21: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("CASINO_GARNAME"); //Casino Penthouse
-			case 22: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARCADE_GARNAME"); //Arcade
-			case 25: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("AUT_SHP_GAR"); //Auto Shop
-			case 26: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("FIXER_GARNAME"); //Agency
-			case 29:
+			break;
+		}
+		case 14: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_CLUBG");  //Nightclub Service Entrance
+		case 15: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR1");   //Nightclub B2
+		case 16: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR2");   //Nightclub B3
+		case 17: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MP_BHUB_GAR3");   //Nightclub B4
+		case 18: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F0");   //Arena Workshop
+		case 19: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F1");   //Arena Workshop B1
+		case 20: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARENA_GAR_F2");   //Arena Workshop B2
+		case 21: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("CASINO_GARNAME"); //Casino Penthouse
+		case 22: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("ARCADE_GARNAME"); //Arcade
+		case 25: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("AUT_SHP_GAR");    //Auto Shop
+		case 26: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("FIXER_GARNAME");  //Agency
+		case 29:
+		{
+			int garage_level = (garage_slot_iterator - 1) / 10;
+			switch (garage_level)
 			{
-				int garage_level = (garage_slot_iterator - 1) / 10;
-				switch (garage_level)
-				{
-					case 0: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B1"); //Eclipse Blvd Garage B1
-					case 1: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B2"); //Eclipse Blvd Garage B2
-					case 2: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B3"); //Eclipse Blvd Garage B3
-					case 3: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B4"); //Eclipse Blvd Garage B4
-					case 4: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B5"); //Eclipse Blvd Garage B5
-				}
+			case 0: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B1"); //Eclipse Blvd Garage B1
+			case 1: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B2"); //Eclipse Blvd Garage B2
+			case 2: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B3"); //Eclipse Blvd Garage B3
+			case 3: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B4"); //Eclipse Blvd Garage B4
+			case 4: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("MSG_B5"); //Eclipse Blvd Garage B5
 			}
 			case 31: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("BO_GARNAME"); //Bail Office
 			case 32: return HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION("HD_GARNAME"); //Garment Factory
@@ -220,12 +229,12 @@ namespace big
 
 	void personal_vehicle::set_garage()
 	{
-		for (int property_iterator = 0; property_iterator < MAX_GARAGE_NUM+4; property_iterator++)
+		for (int property_iterator = 0; property_iterator < MAX_GARAGE_NUM + 4; property_iterator++)
 		{
 			auto property_stat_state = get_property_stat_state(property_iterator);
 			if (property_stat_state > 0) //Check if the player owns the property
 			{
-				auto garage_size = get_property_garage_size(property_iterator);
+				auto garage_size   = get_property_garage_size(property_iterator);
 				auto garage_offset = get_property_garage_offset(property_iterator);
 				for (int garage_slot_iterator = 1; garage_slot_iterator <= garage_size; garage_slot_iterator++)
 				{
@@ -235,7 +244,8 @@ namespace big
 						auto static_property_string = get_static_property_name(property_iterator, garage_slot_iterator);
 						if (static_property_string.empty())
 						{
-							m_garage = HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION(scr_globals::property_names.at(property_stat_state, 1951).at(16).as<const char*>());
+							m_garage = HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION(
+							    scr_globals::property_names.at(property_stat_state, 1951).at(16).as<const char*>());
 						}
 						else
 						{
@@ -252,8 +262,8 @@ namespace big
 	    m_id(idx),
 	    m_vehicle_idx(vehicle_idx)
 	{
-		m_plate          = m_vehicle_idx.at(1).as<char*>();
-		m_hash           = *m_vehicle_idx.at(66).as<Hash*>();
+		m_plate = m_vehicle_idx.at(1).as<char*>();
+		m_hash  = *m_vehicle_idx.at(66).as<Hash*>();
 		set_garage();
 
 		m_name = std::format("{} ({})", HUD::GET_FILENAME_FOR_AUDIO_CONVERSATION(VEHICLE::GET_DISPLAY_NAME_FROM_VEHICLE_MODEL(m_hash)), m_plate);
@@ -303,24 +313,23 @@ namespace big
 	{
 		switch (m_hash)
 		{
-			case "avenger"_J:
-			case "avenger3"_J:
-			case "hauler2"_J:
-			case "phantom3"_J:
-			case "trailersmall2"_J:
-			case "khanjali"_J:
-			case "chernobog"_J:
-			case "riot2"_J:
-			case "thruster"_J:
-			case "brickade2"_J:
-			case "manchez3"_J:
-			case "terbyte"_J:
-			case "speedo4"_J:
-			case "mule4"_J:
-			case "pounder2"_J:
-			case "rcbandito"_J:
-			case "minitank"_J:
-				return !g.clone_pv.spawn_clone;
+		case "avenger"_J:
+		case "avenger3"_J:
+		case "hauler2"_J:
+		case "phantom3"_J:
+		case "trailersmall2"_J:
+		case "khanjali"_J:
+		case "chernobog"_J:
+		case "riot2"_J:
+		case "thruster"_J:
+		case "brickade2"_J:
+		case "manchez3"_J:
+		case "terbyte"_J:
+		case "speedo4"_J:
+		case "mule4"_J:
+		case "pounder2"_J:
+		case "rcbandito"_J:
+		case "minitank"_J: return !g.clone_pv.spawn_clone;
 		}
 		return false;
 	}
@@ -339,7 +348,9 @@ namespace big
 	{
 		const auto now = std::chrono::high_resolution_clock::now();
 		if (std::chrono::duration_cast<std::chrono::seconds>(now - m_last_update) < 10s)
+		{
 			return;
+		}
 		m_last_update = std::chrono::high_resolution_clock::now();
 
 		g_fiber_pool->queue_job([this] {
@@ -354,7 +365,9 @@ namespace big
 		for (int i = 0; i < array_size; i++)
 		{
 			if (i % 100 == 0)
+			{
 				script::get_current()->yield();
+			}
 
 			auto veh_idx_global = scr_globals::vehicle_global.at(i, 143);
 
@@ -385,8 +398,8 @@ namespace big
 					continue;
 				}
 
-				m_pv_lookup.emplace(i, veh->get_display_name());                     // update lookup table
-				m_personal_vehicles.emplace(veh->get_display_name(), std::move(veh));// add new vehicle
+				m_pv_lookup.emplace(i, veh->get_display_name());                      // update lookup table
+				m_personal_vehicles.emplace(veh->get_display_name(), std::move(veh)); // add new vehicle
 
 				continue;
 			}

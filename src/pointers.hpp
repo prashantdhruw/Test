@@ -114,14 +114,14 @@ namespace big
 					auto gta_version = std::format("{}-{}", m_gta.m_online_version, m_gta.m_game_version);
 
 					if (gta_version != m_gta_version_target)
-						message = std::format("{} (Note: Found game version {} but this YimMenu version is for game version {})", message, gta_version, m_gta_version_target);
+						message = std::format("{} (Note: Found game version {} but this Chronix version is for game version {})", message, gta_version, m_gta_version_target);
 				}
 
 				LOG(FATAL) << message;
 
 				if (!m_gta.m_is_session_started || !*m_gta.m_is_session_started) // AC not bypassed yet so exit directly when online
 				{
-					MessageBoxA(m_hwnd, message.c_str(), "YimMenu", MB_ICONWARNING | MB_TOPMOST);
+					MessageBoxA(m_hwnd, message.c_str(), "Chronix", MB_ICONWARNING | MB_TOPMOST);
 				}
 
 				Logger::FlushQueue();

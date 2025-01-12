@@ -1,5 +1,8 @@
 name: Nightly Build
 
+permissions:
+  contents: write
+  
 on:
   schedule:
     # cronjob that triggers every day at 2PM UTC
@@ -60,8 +63,8 @@ jobs:
         with:
           name: binary
           path: |
-            build/YimMenu.dll
-            build/YimMenu.pdb
+            build/Chronix.dll
+            build/Chronix.pdb
 
       - name: Generate Build Info
         id: var
@@ -126,7 +129,7 @@ jobs:
       - name: Echo build sha256
         id: build_sha
         run: |
-          sha256sum YimMenu.dll > sha256.checksum
+          sha256sum Chronix.dll > sha256.checksum
           echo "build_sha=$(cat sha256.checksum)" >> $GITHUB_OUTPUT
           cat sha256.checksum
 
@@ -159,4 +162,4 @@ jobs:
             ${{ needs.build_nightly.outputs.full_sha }}
             ```
           files: |
-            YimMenu.dll
+            Chronix.dll

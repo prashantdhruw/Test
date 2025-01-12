@@ -7,7 +7,6 @@
 #include "natives.hpp"
 #include "notify.hpp"
 #include "script.hpp"
-#include "core/scr_globals.hpp"
 #include "script_local.hpp"
 #include "vehicle.hpp"
 
@@ -79,8 +78,12 @@ namespace big::mobile
 
 			const int arr_size = *scr_globals::vehicle_global.as<int*>();
 			for (int i = 0; i < arr_size; i++)
+			{
 				if (fix_index(i, true))
+				{
 					fixed_count++;
+				}
+			}
 
 			return fixed_count;
 		}
@@ -153,10 +156,14 @@ namespace big::mobile
 		inline void summon_vehicle_by_index(int veh_idx)
 		{
 			if (*scr_globals::freemode_global.at(1016).as<int*>() != -1)
+			{
 				return g_notification_service.push_warning("VEHICLE"_T.data(), "VEHICLE_MECHANIC_BUSY"_T.data());
+			}
 
 			if (g.clone_pv.spawn_inside && self::veh)
+			{
 				TASK::CLEAR_PED_TASKS_IMMEDIATELY(PLAYER::PLAYER_PED_ID());
+			}
 
 			// despawn current veh
 			util::despawn_current_personal_vehicle();

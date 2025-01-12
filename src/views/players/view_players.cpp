@@ -56,7 +56,7 @@ namespace big
 
 		const auto style = ImGui::GetStyle();
 		// branchless conditional calculation
-		const auto plyr_btn_width = 300.f - (style.ItemInnerSpacing.x * 2) - (has_scrollbar * style.ScrollbarSize);
+		const auto plyr_btn_width = 315.f - (style.ItemInnerSpacing.x * 2) - (has_scrollbar * style.ScrollbarSize);
 		if (ImGui::Button(plyr->get_name(), { plyr_btn_width, 0.f}))
 		{
 			g_player_service->set_selected(plyr);
@@ -97,11 +97,11 @@ namespace big
 
 		if (!*g_pointers->m_gta.m_is_session_started && player_count < 2)
 			return;
-		float window_pos = 110.f + g_gui_service->nav_ctr * ImGui::CalcTextSize("W").y
+		float window_pos = 140.f + g_gui_service->nav_ctr * ImGui::CalcTextSize("W").y
 		    + g_gui_service->nav_ctr * ImGui::GetStyle().ItemSpacing.y
 		    + g_gui_service->nav_ctr * ImGui::GetStyle().ItemInnerSpacing.y + ImGui::GetStyle().WindowPadding.y;
 
-		ImGui::SetNextWindowSize({300.f, 0.f});
+		ImGui::SetNextWindowSize({315.f, 0.f});
 		ImGui::SetNextWindowPos({10.f, window_pos});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {2.0f, 2.0f});
 
