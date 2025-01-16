@@ -97,15 +97,16 @@ namespace big
 
 	void view::heading()
 	{
+		CURL* curl                                     = curl_easy_init();
 		static bool headerTextureLoaded                = false;
 		static ID3D11ShaderResourceView* headerTexture = nullptr;
-
-		extern ID3D11Device* g_device;
-		extern ID3D11DeviceContext* g_context;
+		static int loadAttempts                        = 0; // Track the number of attempts
+		const int maxAttempts                          = 3; // Maximum allowed attempts
+		static bool errorLogged                        = false;
 
 		std::string headerImageUrl = "https://bedrock.root.sx/images/" + g.window.selected_header_image;
 
-		if (!headerTextureLoaded || g.window.selected_header_image_changed)
+		if ((!headerTextureLoaded || g.window.selected_header_image_changed) && loadAttempts < maxAttempts)
 		{
 			if (headerTexture)
 			{
@@ -119,6 +120,12 @@ namespace big
 			{
 				headerTextureLoaded                    = true;
 				g.window.selected_header_image_changed = false;
+				loadAttempts                           = 0; // Reset attempts on successful load
+			}
+			else
+			{
+				++loadAttempts; // Increment attempts on failure
+				LOG(WARNING) << "Failed to load header texture. Attempt " << loadAttempts << " of " << maxAttempts << ".\n";
 			}
 		}
 
@@ -149,7 +156,7 @@ namespace big
 				{
 					std::string playerName     = g_local_player->m_player_info->m_net_player_data.m_name;
 					std::string welcomeMessage = "Welcome, " + playerName + "!";
-					if (components::header_button(welcomeMessage.c_str(), 75.f, 2.f, ""))
+					if (components::header_button(welcomeMessage.c_str(), 50.f, 2.f, ""))
 					{
 					}
 				}
@@ -169,6 +176,11 @@ namespace big
 		else
 		{
 			// Fallback content if texture loading fails
+			if (loadAttempts >= maxAttempts && !errorLogged)
+			{
+				LOG(FATAL) << "Maximum attempts reached. Header texture could not be loaded.\n";
+				errorLogged = true; // Ensure the error is only logged once
+			}
 			ImGui::SetNextWindowSize({315.f * g.window.gui_scale, 80.f * g.window.gui_scale});
 			ImGui::SetNextWindowPos({10.f, 10.f});
 			if (ImGui::Begin("menu_heading", nullptr, window_flags | ImGuiWindowFlags_NoScrollbar))

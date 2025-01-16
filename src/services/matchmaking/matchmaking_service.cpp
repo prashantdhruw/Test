@@ -207,7 +207,7 @@ namespace big
 			rage::rlTaskStatus our_status{};
 			if (!g_hooking->get_original<hooks::advertise_session>()(0, num_slots, available_slots, attributes, -1, info, out_id, &our_status))
 			{
-				LOG(WARNING) << __FUNCTION__ ": advertise_session returned false for first advertisement";
+				//LOG(WARNING) << __FUNCTION__ ": advertise_session returned false for first advertisement";
 				status->status = 2;
 				return;
 			}
@@ -219,7 +219,7 @@ namespace big
 
 			if (our_status.status == 2)
 			{
-				LOG(WARNING) << __FUNCTION__ ": advertise_session failed for first advertisement";
+				//LOG(WARNING) << __FUNCTION__ ": advertise_session failed for first advertisement";
 				status->status = 2;
 				return;
 			}
@@ -238,7 +238,7 @@ namespace big
 					MatchmakingId multiplexed_id;
 					if (!g_hooking->get_original<hooks::advertise_session>()(0, num_slots, available_slots, attributes, -1, info, &multiplexed_id, &status))
 					{
-						LOG(WARNING) << __FUNCTION__ ": advertise_session returned false for multiplex task " << i;
+						//LOG(WARNING) << __FUNCTION__ ": advertise_session returned false for multiplex task " << i;
 						return;
 					}
 
@@ -249,7 +249,7 @@ namespace big
 
 					if (status.status == 2)
 					{
-						LOG(WARNING) << __FUNCTION__ ": advertise_session failed for multiplex task " << i;
+						//LOG(WARNING) << __FUNCTION__ ": advertise_session failed for multiplex task " << i;
 						return;
 					}
 
@@ -259,7 +259,7 @@ namespace big
 					}
 					else
 					{
-						LOG(WARNING) << __FUNCTION__ ": created a multiplexed session advertisement, but the primary advertisement no longer exists";
+						//LOG(WARNING) << __FUNCTION__ ": created a multiplexed session advertisement, but the primary advertisement no longer exists";
 					}
 				});
 			}
@@ -289,7 +289,7 @@ namespace big
 					rage::rlTaskStatus status;
 					if (!g_hooking->get_original<hooks::update_session_advertisement>()(0, &multiplex_session, num_slots, available_slots, info, attributes, &status))
 					{
-						LOG(WARNING) << __FUNCTION__ ": update_session_advertisement returned false for multiplex task " << i;
+						//LOG(WARNING) << __FUNCTION__ ": update_session_advertisement returned false for multiplex task " << i;
 						return;
 					}
 
@@ -300,7 +300,7 @@ namespace big
 
 					if (status.status == 2)
 					{
-						LOG(WARNING) << __FUNCTION__ ": update_session_advertisement failed for multiplex task " << i;
+						//LOG(WARNING) << __FUNCTION__ ": update_session_advertisement failed for multiplex task " << i;
 						return;
 					}
 				});
@@ -367,7 +367,7 @@ namespace big
 		}
 		else
 		{
-			LOG(WARNING) << __FUNCTION__ ": sending fail code " << msg->m_status;
+			//LOG(WARNING) << __FUNCTION__ ": sending fail code " << msg->m_status;
 		}
 	}
 }
