@@ -76,7 +76,7 @@ jobs:
           # Fetch the number of processors dynamically
           $processors = (Get-WmiObject -Class Win32_ComputerSystem).NumberOfLogicalProcessors
           echo "Number of processors: $processors"
-          ninja -C ./build -j$processors
+          ninja -C ./build -j4
         shell: pwsh
 
       - name: Upload Artifact
