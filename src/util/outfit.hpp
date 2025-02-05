@@ -16,17 +16,17 @@ namespace big::outfit
 	struct components_t
 	{
 		std::vector<outfit_t> items = {{0, "OUTFIT_HEAD"_T.data()},
-		    {1, "OUTFIT_BERD"_T.data()},
+		    {1, "OUTFIT_MASKS"_T.data()},
 		    {2, "OUTFIT_HAIR"_T.data()},
-		    {3, "OUTFIT_UPPR"_T.data()},
-		    {4, "OUTFIT_LOWR"_T.data()},
-		    {5, "OUTFIT_HAND"_T.data()},
+		    {3, "OUTFIT_HANDS"_T.data()},
+		    {4, "OUTFIT_PANTS"_T.data()},
+		    {5, "OUTFIT_BACK"_T.data()},
 		    {6, "OUTFIT_FEET"_T.data()},
-		    {7, "OUTFIT_TEEF"_T.data()},
+		    {7, "OUTFIT_SCARF"_T.data()},
 		    {8, "OUTFIT_ACCS"_T.data()},
-		    {9, "OUTFIT_TASK"_T.data()},
+		    {9, "OUTFIT_VEST"_T.data()},
 		    {10, "OUTFIT_DECL"_T.data()},
-		    {11, "OUTFIT_JBIB"_T.data()}};
+		    {11, "OUTFIT_SHIRT"_T.data()}};
 	};
 
 	struct props_t
