@@ -71,14 +71,10 @@ jobs:
       - name: Generate CMake project
         run: cmake -D CMAKE_BUILD_TYPE=RelWithDebInfo -D OPTIMIZE=YES -S. -Bbuild -G Ninja
 
-      - name: Build 64bit release DLL (with parallelism)
+      - name: Build 64bit release DLL (using Ninja directly)
         run: |
-          # Use the appropriate number of parallel jobs based on the OS
-          if ($env:RUNNER_OS -eq 'Windows') {
-            cmake --build ./build --config RelWithDebInfo --target YimMenu -- -j$(($env:NUMBER_OF_PROCESSORS))
-          } else {
-            cmake --build ./build --config RelWithDebInfo --target YimMenu -- -j$(nproc)
-          }
+          # Use Ninja directly with -j for parallel builds
+          ninja -C ./build -j$(($env:NUMBER_OF_PROCESSORS))
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
