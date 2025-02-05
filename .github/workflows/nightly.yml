@@ -20,7 +20,7 @@ jobs:
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: should_run
         name: Check if latest commit date is within the previous 24 hours
@@ -40,7 +40,7 @@ jobs:
       full_sha: ${{ steps.var.outputs.full_sha }}
       short_sha: ${{ steps.var.outputs.short_sha }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -59,7 +59,7 @@ jobs:
         run: cmake --build ./build --config RelWithDebInfo --target YimMenu --
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binary
           path: |
@@ -78,7 +78,7 @@ jobs:
     needs: build_nightly
     if: needs.check_recent_commit.outputs.should_run == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Delete Existing Release
         id: delete_release
@@ -122,7 +122,7 @@ jobs:
             }
 
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: binary
 
