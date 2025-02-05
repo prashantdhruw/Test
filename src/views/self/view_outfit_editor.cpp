@@ -51,7 +51,6 @@ namespace big
 		components::button("OUTFIT_CLEAR_PROPS"_T, [] {
 			PED::CLEAR_ALL_PED_PROPS(self::ped, 1);
 		});
-		ImGui::SameLine();
 
 		components::button("EXPORT_TO_CLIPBOARD"_T, [] {
 			std::stringstream ss;
@@ -101,75 +100,97 @@ namespace big
 				}
 			}
 		});
-
-		ImGui::BeginGroup();
-		for (auto& item : components.items)
+		if (ImGui::BeginTabBar("OutfitTabs"))
 		{
-			ImGui::SetNextItemWidth(120);
-			if (ImGui::InputInt(std::format("{} [0,{}]##1", item.label, item.drawable_id_max).c_str(), &item.drawable_id))
+			// First Tab - Clothing and Textures
+			if (ImGui::BeginTabItem("Clothing"))
 			{
-				outfit::check_bounds_drawable(&item, 0); // The game does this on it's own but seems to crash if we call OOB values to fast.
+				// Clothing Drawables
+				ImGui::BeginGroup();
+				for (auto& item : components.items)
+				{
+					ImGui::SetNextItemWidth(120);
+					if (ImGui::InputInt(std::format("{} [0,{}]##1", item.label, item.drawable_id_max).c_str(), &item.drawable_id))
+					{
+						outfit::check_bounds_drawable(&item, 0); // The game does this on its own but seems to crash if we call OOB values too fast.
 
-				g_fiber_pool->queue_job([item] {
-					PED::SET_PED_COMPONENT_VARIATION(self::ped, item.id, item.drawable_id, 0, PED::GET_PED_PALETTE_VARIATION(self::ped, item.id));
-				});
+						g_fiber_pool->queue_job([item] {
+							PED::SET_PED_COMPONENT_VARIATION(self::ped, item.id, item.drawable_id, 0, PED::GET_PED_PALETTE_VARIATION(self::ped, item.id));
+						});
+					}
+				}
+				ImGui::EndGroup();
+
+				ImGui::SameLine();
+
+				// Clothing Textures
+				ImGui::BeginGroup();
+				for (auto& item : components.items)
+				{
+					ImGui::SetNextItemWidth(120);
+					if (ImGui::InputInt(std::format("{} {} [0,{}]##2", item.label, "OUTFIT_TEX"_T, item.texture_id_max).c_str(), &item.texture_id))
+					{
+						outfit::check_bounds_texture(&item, 0); // The game does this on its own but seems to crash if we call OOB values too fast.
+
+						g_fiber_pool->queue_job([item] {
+							PED::SET_PED_COMPONENT_VARIATION(self::ped, item.id, item.drawable_id, item.texture_id, PED::GET_PED_PALETTE_VARIATION(self::ped, item.id));
+						});
+					}
+				}
+				ImGui::EndGroup();
+
+				ImGui::EndTabItem();
 			}
-		}
-		ImGui::EndGroup();
 
-		ImGui::SameLine();
-
-		ImGui::BeginGroup();
-		for (auto& item : components.items)
-		{
-			ImGui::SetNextItemWidth(120);
-			if (ImGui::InputInt(std::format("{} {} [0,{}]##2", item.label, "OUTFIT_TEX"_T, item.texture_id_max).c_str(), &item.texture_id))
+			// Second Tab - Accessories and Textures
+			if (ImGui::BeginTabItem("Accessories"))
 			{
-				outfit::check_bounds_texture(&item, 0); // The game does this on it's own but seems to crash if we call OOB values to fast.
+				// Accessories Drawables
+				ImGui::BeginGroup();
+				for (auto& item : props.items)
+				{
+					ImGui::SetNextItemWidth(120);
+					if (ImGui::InputInt(std::format("{} [0,{}]##3", item.label, item.drawable_id_max).c_str(), &item.drawable_id))
+					{
+						outfit::check_bounds_drawable(&item, -1); // The game does this on its own but seems to crash if we call OOB values too fast.
 
-				g_fiber_pool->queue_job([item] {
-					PED::SET_PED_COMPONENT_VARIATION(self::ped, item.id, item.drawable_id, item.texture_id, PED::GET_PED_PALETTE_VARIATION(self::ped, item.id));
-				});
+						g_fiber_pool->queue_job([item] {
+							if (item.drawable_id == -1)
+							{
+								PED::CLEAR_PED_PROP(self::ped, item.id, 1);
+							}
+							else
+							{
+								PED::SET_PED_PROP_INDEX(self::ped, item.id, item.drawable_id, 0, TRUE, 1);
+							}
+						});
+					}
+				}
+				ImGui::EndGroup();
+
+				ImGui::SameLine();
+
+				// Accessories Textures
+				ImGui::BeginGroup();
+				for (auto& item : props.items)
+				{
+					ImGui::SetNextItemWidth(120);
+					if (ImGui::InputInt(std::format("{} {} [0,{}]##4", item.label, "OUTFIT_TEX"_T, item.texture_id_max).c_str(), &item.texture_id))
+					{
+						outfit::check_bounds_texture(&item, -1); // The game does this on its own but seems to crash if we call OOB values too fast.
+
+						g_fiber_pool->queue_job([item] {
+							PED::SET_PED_PROP_INDEX(self::ped, item.id, item.drawable_id, item.texture_id, TRUE, 1);
+						});
+					}
+				}
+				ImGui::EndGroup();
+
+				ImGui::EndTabItem();
 			}
+
+			ImGui::EndTabBar();
 		}
-		ImGui::EndGroup();
-
-		ImGui::SameLine();
-
-		ImGui::BeginGroup();
-		for (auto& item : props.items)
-		{
-			ImGui::SetNextItemWidth(120);
-			if (ImGui::InputInt(std::format("{} [0,{}]##3", item.label, item.drawable_id_max).c_str(), &item.drawable_id))
-			{
-				outfit::check_bounds_drawable(&item, -1); // The game does this on it's own but seems to crash if we call OOB values to fast.
-
-				g_fiber_pool->queue_job([item] {
-					if (item.drawable_id == -1)
-						PED::CLEAR_PED_PROP(self::ped, item.id, 1);
-					else
-						PED::SET_PED_PROP_INDEX(self::ped, item.id, item.drawable_id, 0, TRUE, 1);
-				});
-			}
-		}
-		ImGui::EndGroup();
-
-		ImGui::SameLine();
-
-		ImGui::BeginGroup();
-		for (auto& item : props.items)
-		{
-			ImGui::SetNextItemWidth(120);
-			if (ImGui::InputInt(std::format("{} {} [0,{}]##4", item.label, "OUTFIT_TEX"_T, item.texture_id_max).c_str(), &item.texture_id))
-			{
-				outfit::check_bounds_texture(&item, -1); // The game does this on it's own but seems to crash if we call OOB values to fast.
-
-				g_fiber_pool->queue_job([item] {
-					PED::SET_PED_PROP_INDEX(self::ped, item.id, item.drawable_id, item.texture_id, TRUE, 1);
-				});
-			}
-		}
-		ImGui::EndGroup();
 
 		ImGui::Separator();
 
@@ -236,7 +257,7 @@ namespace big
 		{
 			g.self.persist_outfit.clear();
 		}
-		ImGui::SameLine();
+
 		ImGui::Checkbox("VIEW_SELF_OUTFIT_DISABLE_DURING_MISSIONS"_T.data(), &g.self.persist_outfits_mis);
 		ImGui::Text(std::format("{}: {}", "VIEW_SELF_OUTFIT_CURRENT_PERSISTED_OUTFIT"_T.data(), g.self.persist_outfit).c_str());
 		ImGui::EndGroup();
