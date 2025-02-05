@@ -2,7 +2,7 @@ name: Nightly Build
 
 permissions:
   contents: write
-  
+
 on:
   schedule:
     # cronjob that triggers every day at 2PM UTC
@@ -20,7 +20,7 @@ jobs:
     outputs:
       should_run: ${{ steps.should_run.outputs.should_run }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: should_run
         name: Check if latest commit date is within the previous 24 hours
@@ -40,9 +40,20 @@ jobs:
       full_sha: ${{ steps.var.outputs.full_sha }}
       short_sha: ${{ steps.var.outputs.short_sha }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 1  # Minimize the git history fetched, to speed up checkout
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/CMake
+            ./build
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
 
       - name: Check CMake version
         run: cmake --version
@@ -52,14 +63,24 @@ jobs:
         with:
           arch: amd64
 
+      - name: Install ccache (for faster builds)
+        run: |
+          choco install ccache
+        shell: pwsh
+
       - name: Generate CMake project
         run: cmake -D CMAKE_BUILD_TYPE=RelWithDebInfo -D OPTIMIZE=YES -S. -Bbuild -G Ninja
 
-      - name: Build 64bit release DLL
-        run: cmake --build ./build --config RelWithDebInfo --target YimMenu --
+      - name: Build 64bit release DLL (using Ninja directly)
+        run: |
+          # Fetch the number of processors dynamically
+          $processors = (Get-WmiObject -Class Win32_ComputerSystem).NumberOfLogicalProcessors
+          echo "Number of processors: $processors"
+          ninja -C ./build -j4
+        shell: pwsh
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binary
           path: |
@@ -78,7 +99,7 @@ jobs:
     needs: build_nightly
     if: needs.check_recent_commit.outputs.should_run == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Delete Existing Release
         id: delete_release
@@ -88,15 +109,15 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const tag = "nightly";
-      
+
             // List all releases and find the release by tag
             const releases = await github.rest.repos.listReleases({
               owner: owner,
               repo: repo,
             });
-      
+
             const release = releases.data.find(release => release.tag_name === tag);
-      
+
             // Check if the release exists and delete it
             if (release) {
               await github.rest.repos.deleteRelease({
@@ -108,7 +129,7 @@ jobs:
             } else {
               console.log("No existing release to delete");
             }
-      
+
             // Delete the tag
             try {
               await github.rest.git.deleteRef({
@@ -122,7 +143,7 @@ jobs:
             }
 
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: binary
 
@@ -147,14 +168,11 @@ jobs:
             ${{ steps.build_sha.outputs.build_sha }}
             ```
             To verify the build SHA256 during the action, click the build link, go-to "Create Release", open the Echo build sha256 step and read the sha256.
-
             You can download the build artifacts, generate a SHA256 checksum and compare it with the below binary.
             Build artifacts ARE NOT automatically the same as release assets since release assets can be modified afterwards.
-
             These are nightly builds of YimMenu, they are provided for testing purposes only:
             - Test if your build environment produces a broken YimMenu.dll
             - Test if source code is out of date and no longer compatible with the current version of GTA V
-
             If you wish to use this menu as-is you are on your own, no warranty is provided.
 
             Full Commit Hash:
