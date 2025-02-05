@@ -72,7 +72,13 @@ jobs:
         run: cmake -D CMAKE_BUILD_TYPE=RelWithDebInfo -D OPTIMIZE=YES -S. -Bbuild -G Ninja
 
       - name: Build 64bit release DLL (with parallelism)
-        run: cmake --build ./build --config RelWithDebInfo --target YimMenu -- -j$(nproc)
+        run: |
+          # Use the appropriate number of parallel jobs based on the OS
+          if ($env:RUNNER_OS -eq 'Windows') {
+            cmake --build ./build --config RelWithDebInfo --target YimMenu -- -j$(($env:NUMBER_OF_PROCESSORS))
+          } else {
+            cmake --build ./build --config RelWithDebInfo --target YimMenu -- -j$(nproc)
+          }
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -157,6 +163,7 @@ jobs:
           body: |
             **This release has been built by Github Actions**
             [Link to build](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
             Build SHA256:
             ```
             ${{ steps.build_sha.outputs.build_sha }}
@@ -168,6 +175,7 @@ jobs:
             - Test if your build environment produces a broken YimMenu.dll
             - Test if source code is out of date and no longer compatible with the current version of GTA V
             If you wish to use this menu as-is you are on your own, no warranty is provided.
+
             Full Commit Hash:
             ```
             ${{ needs.build_nightly.outputs.full_sha }}
