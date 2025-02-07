@@ -164,28 +164,31 @@ namespace big
 	nlohmann::json translation_service::load_translation(const std::string_view pack_id)
 	{
 		auto file = m_translation_directory->get_file(std::format("./{}.json", pack_id));
-		if (!file.exists())
+
+		// Always attempt to download and replace the file
+		LOG(INFO) << "Downloading translations for '" << pack_id << "' from " << m_url;
+
+		if (!download_language_pack(pack_id))
 		{
-			LOG(INFO) << "Translations for '" << pack_id << "' does not exist, downloading from " << m_url;
-			if (!download_language_pack(pack_id))
-			{
-				LOG(WARNING) << "Failed to download language pack, can't recover...";
-				return {};
-			}
-			// make a copy available
-			m_local_index.fallback_languages[pack_id.data()] = m_remote_index.translations[pack_id.data()];
+			LOG(WARNING) << "Failed to download language pack, can't recover...";
+			return {};
 		}
+
+		// Ensure the downloaded file is available
+		m_local_index.fallback_languages[pack_id.data()] = m_remote_index.translations[pack_id.data()];
 
 		try
 		{
 			return nlohmann::json::parse(std::ifstream(file.get_path(), std::ios::binary));
 		}
-		catch (std::exception& e)
+		catch (const std::exception& e)
 		{
 			LOG(WARNING) << "Failed to parse language pack. " << e.what();
 
-			if (auto it = m_remote_index.translations.find(pack_id.data()); it != m_remote_index.translations.end()) // ensure that local language files are not removed
-				std::filesystem::remove(file.get_path());
+			if (m_remote_index.translations.find(pack_id.data()) != m_remote_index.translations.end())
+			{
+				std::filesystem::remove(file.get_path()); // Remove corrupt file
+			}
 
 			return {};
 		}

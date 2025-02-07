@@ -340,6 +340,7 @@ namespace big
 			bool force_wanted_level           = false;
 			bool passive                      = false;
 			bool free_cam                     = false;
+			bool preview_cam                  = false;
 			bool invisibility                 = false;
 			bool local_visibility             = true;
 			bool no_ragdoll                   = false;

@@ -16,19 +16,26 @@ namespace big
 	static void player_button(const player_ptr& plyr)
 	{
 		if (plyr == nullptr || !plyr->is_valid())
+		{
 			return;
+		}
 
 		bool selected_player = plyr == g_player_service->get_selected();
 
 		// generate icons string
 		std::string player_icons;
 		if (plyr->is_host())
+		{
 			player_icons += FONT_ICON_HOST;
+		}
 		if (plyr->is_friend())
+		{
 			player_icons += FONT_ICON_FRIEND;
-		if (const auto ped = plyr->get_ped(); (ped != nullptr
-		        && (ped->m_ped_task_flag & (uint8_t)ePedTask::TASK_DRIVING || PLAYER::IS_REMOTE_PLAYER_IN_NON_CLONED_VEHICLE(plyr->id()))))
+		}
+		if (const auto ped = plyr->get_ped(); (ped != nullptr && (ped->m_ped_task_flag & (uint8_t)ePedTask::TASK_DRIVING || PLAYER::IS_REMOTE_PLAYER_IN_NON_CLONED_VEHICLE(plyr->id()))))
+		{
 			player_icons += FONT_ICON_VEHICLE;
+		}
 
 		const auto player_iconsc    = player_icons.c_str();
 		const auto player_icons_end = player_iconsc + player_icons.size();
@@ -42,14 +49,22 @@ namespace big
 		ImGui::PopFont();
 
 		if (plyr->is_admin)
+		{
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.f, 0.67f, 0.f, 1.f));
+		}
 		else if (plyr->is_modder)
+		{
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.f, 0.1f, 0.1f, 1.f));
+		}
 		else if (plyr->is_trusted)
+		{
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.67f, 0.1f, 1.f));
+		}
 
 		if (selected_player)
+		{
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.29f, 0.45f, 0.69f, 1.f));
+		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, {0.0, 0.5});
 		ImGui::PushID(plyr->id());
@@ -57,7 +72,7 @@ namespace big
 		const auto style = ImGui::GetStyle();
 		// branchless conditional calculation
 		const auto plyr_btn_width = 315.f - (style.ItemInnerSpacing.x * 2) - (has_scrollbar * style.ScrollbarSize);
-		if (ImGui::Button(plyr->get_name(), { plyr_btn_width, 0.f}))
+		if (ImGui::Button(plyr->get_name(), {plyr_btn_width, 0.f}))
 		{
 			g_player_service->set_selected(plyr);
 			g_gui_service->set_selected(tabs::PLAYER);
@@ -70,7 +85,9 @@ namespace big
 			{
 				ImGui::BeginTooltip();
 				for (auto infraction : sorted_player->infractions)
+				{
 					ImGui::BulletText(sorted_player->get_infraction_description(infraction));
+				}
 				ImGui::EndTooltip();
 			}
 		}
@@ -79,10 +96,14 @@ namespace big
 		ImGui::PopStyleVar();
 
 		if (selected_player)
+		{
 			ImGui::PopStyleColor();
+		}
 
 		if (plyr->is_admin || plyr->is_modder || plyr->is_trusted)
+		{
 			ImGui::PopStyleColor();
+		}
 
 		// render icons on top of the player button
 		ImGui::PushFont(g.window.font_icon);
@@ -96,23 +117,24 @@ namespace big
 		const auto player_count = g_player_service->players().size() + 1;
 
 		if (!*g_pointers->m_gta.m_is_session_started && player_count < 2)
+		{
 			return;
-		float window_pos = 140.f + g_gui_service->nav_ctr * ImGui::CalcTextSize("W").y
+		}
+		float window_pos = 185.f + g_gui_service->nav_ctr * ImGui::CalcTextSize("W").y
 		    + g_gui_service->nav_ctr * ImGui::GetStyle().ItemSpacing.y
 		    + g_gui_service->nav_ctr * ImGui::GetStyle().ItemInnerSpacing.y + ImGui::GetStyle().WindowPadding.y;
 
-		ImGui::SetNextWindowSize({315.f, 0.f});
+		ImGui::SetNextWindowSize({315.f * g.window.gui_scale, 0.f}, ImGuiCond_Always);
 		ImGui::SetNextWindowPos({10.f, window_pos});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {2.0f, 2.0f});
 
 		if (ImGui::Begin("playerlist", nullptr, window_flags))
 		{
 			const auto style = ImGui::GetStyle();
-			float window_height = (
-				ImGui::CalcTextSize("A").y + style.FramePadding.y * 2.0f + style.ItemSpacing.y) // button size
-				* player_count // amount of players
-				+ (player_count > 1) * ((style.ItemSpacing.y * 2) + 1.f) // account for ImGui::Separator spacing
-				+ (player_count == 1) * 2.f; // some arbitrary height to make it fit
+			float window_height = (ImGui::CalcTextSize("A").y + style.FramePadding.y * 2.0f + style.ItemSpacing.y) // button size
+			        * player_count                                       // amount of players
+			    + (player_count > 1) * ((style.ItemSpacing.y * 2) + 1.f) // account for ImGui::Separator spacing
+			    + (player_count == 1) * 2.f;                             // some arbitrary height to make it fit
 			// used to account for scrollbar width
 			has_scrollbar = window_height + window_pos > (float)*g_pointers->m_gta.m_resolution_y - 10.f;
 
@@ -128,10 +150,14 @@ namespace big
 				player_button(g_player_service->get_self());
 
 				if (player_count > 1)
+				{
 					ImGui::Separator();
+				}
 
 				for (const auto& [_, player] : g_player_service->players())
+				{
 					player_button(player);
+				}
 
 				ImGui::EndListBox();
 			}

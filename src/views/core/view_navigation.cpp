@@ -19,6 +19,7 @@ namespace big
 				case tabs::DEBUG: continue;
 				default: components::nav_item(nav_item, 0);
 				}
+				ImGui::Separator();
 			}
 		}
 		ImGui::End();
