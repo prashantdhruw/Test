@@ -469,20 +469,29 @@ namespace big
 			break;
 		}
 		case eRemoteEvent::StartScriptBegin:
-		{
-			int script_id = args[3];
+{
+    int script_id = args[3];
 
-			if (!protection::should_allow_script_launch(script_id))
-			{
-				LOGF(stream::script_events, WARNING, "Blocked StartScriptBegin from {} with script ID {}", plyr->get_name(), script_id);
-				g.reactions.start_script.process(plyr);
-				return true;
-			}
-			else
-			{
-				LOGF(stream::script_events, INFO, "Allowed StartScriptBegin from {} with script ID {}", plyr->get_name(), script_id);
-			}
-		}
+    if (script_id == 236)
+    {
+        // Block the script event with ID 236
+        LOGF(stream::script_events, WARNING, "Blocked StartScriptBegin from {} with script ID {}", plyr->get_name(), script_id);
+        g.reactions.start_script.process(plyr);
+        return true;
+    }
+    else if (!protection::should_allow_script_launch(script_id))
+    {
+        // Block other script events that are not allowed
+        LOGF(stream::script_events, WARNING, "Blocked StartScriptBegin from {} with script ID {}", plyr->get_name(), script_id);
+        g.reactions.start_script.process(plyr);
+        return true;
+    }
+    else
+    {
+        // Allow the script event
+        LOGF(stream::script_events, INFO, "Allowed StartScriptBegin from {} with script ID {}", plyr->get_name(), script_id);
+    }
+}
 		}
 
 		// detect pasted menus setting args[1] to something other than PLAYER_ID()
