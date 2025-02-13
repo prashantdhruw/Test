@@ -8,7 +8,7 @@ namespace big
 {
 	void view::outfit_editor()
 	{
-		ImVec2 window_size = ImVec2(700, 500);
+		ImVec2 window_size = ImVec2(710, 500);
 		ImGui::SetNextWindowPos({335.f, 140.f * g.window.gui_scale}, ImGuiCond_Once);
 		ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
 
@@ -264,6 +264,22 @@ namespace big
 					}
 				}
 			});
+
+			ImGui::BeginGroup();
+			if (ImGui::Button("VIEW_SELF_OUTFIT_SET_PERSIST_OUTFIT"_T.data()))
+			{
+				g.self.persist_outfit = saved_outfits[selected_index];
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("VIEW_SELF_OUTFIT_CLEAR_PERSIST_OUTFIT"_T.data()))
+			{
+				g.self.persist_outfit.clear();
+			}
+			ImGui::SameLine();
+			ImGui::Checkbox("VIEW_SELF_OUTFIT_DISABLE_DURING_MISSIONS"_T.data(), &g.self.persist_outfits_mis);
+			ImGui::Text(
+			    std::format("{}: {}", "VIEW_SELF_OUTFIT_CURRENT_PERSISTED_OUTFIT"_T.data(), g.self.persist_outfit).c_str());
+			ImGui::EndGroup();
 
 			if (ImGui::BeginListBox("Saved Outfits"))
 			{
